@@ -84,7 +84,7 @@ export function renderHome() {
     decoration.style.zIndex = position.depth;
     decoration.setAttribute('aria-hidden', 'true');
     const image = document.createElement('img');
-    image.src = './assets/origami-star-cute.png';
+    image.src = './assets/origami-star-cute.webp';
     image.alt = '';
     decoration.append(image);
     return decoration;
@@ -284,7 +284,7 @@ export function renderArchive(filter = archiveFilter) {
     const starVisual = document.createElement('span');
     starVisual.className = 'archive-star';
     const starImage = document.createElement('img');
-    starImage.src = './assets/origami-star-cute.png';
+    starImage.src = './assets/origami-star-cute.webp';
     starImage.alt = '';
     starVisual.append(starImage);
     const summary = document.createElement('span');

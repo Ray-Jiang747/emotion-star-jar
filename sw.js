@@ -1,4 +1,4 @@
-const CACHE_NAME = 'emotion-star-jar-pwa-v3';
+const CACHE_NAME = 'emotion-star-jar-pwa-v4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,7 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './styles.css?v=3',
   './install.css?v=3',
-  './js/app.js',
+  './js/app.js?v=4',
   './js/emotion-catalog.js',
   './js/install.js',
   './js/pwa-register.js',
@@ -15,6 +15,7 @@ const APP_SHELL = [
   './js/view-state.js',
   './assets/icon-192.png',
   './assets/icon-512.png',
+  './assets/origami-star-cute.webp',
 ];
 
 self.addEventListener('install', (event) => {

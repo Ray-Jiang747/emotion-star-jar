@@ -36,3 +36,14 @@ test('a first mobile visit stays within a 1.5 MiB local asset budget', () => {
     `first-visit local assets are ${(totalBytes / 1024 / 1024).toFixed(2)} MiB`
   );
 });
+
+test('offline shell includes every image created dynamically by the app', () => {
+  const app = readFileSync(new URL('js/app.js', root), 'utf8');
+  const worker = readFileSync(new URL('sw.js', root), 'utf8');
+  const dynamicImages = [...app.matchAll(/["'](\.\/assets\/[^"']+\.(?:png|webp))["']/g)]
+    .map((match) => match[1]);
+
+  for (const image of new Set(dynamicImages)) {
+    assert.match(worker, new RegExp(image.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+});
