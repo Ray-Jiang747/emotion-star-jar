@@ -118,7 +118,7 @@
         <span id="write-heading" class="section-label">写下这一刻</span>
         <form id="reason-form">
           <label for="reason-input" class="section-label">让我有这种情绪的原因是……</label>
-          <textarea id="reason-input" name="reason" placeholder="可以只写几个词，也可以写一整段话。" required></textarea>
+          <textarea id="reason-input" name="reason" placeholder="可以只写几个词，也可以写一整段话。"></textarea>
           <fieldset id="color-picker" class="color-choices">
             <legend>为这颗星星选个颜色</legend>
             <label class="color-choice"><input id="color-sun" type="radio" name="star-color" value="sun" checked><span class="swatch sun" aria-hidden="true"></span>暖黄</label>
@@ -161,5 +161,149 @@
       </form>
     </dialog>
   </main>
+  <script>
+    (() => {
+      const storageKey = 'emotion-star-jar:v1';
+      const colorMap = {
+        sun: { stored: 'yellow', css: '--sun' },
+        sky: { stored: 'blue', css: '--sky' },
+        lavender: { stored: 'purple', css: '--lavender' },
+        coral: { stored: 'pink', css: '--coral' },
+        yellow: { stored: 'yellow', css: '--sun' },
+        blue: { stored: 'blue', css: '--sky' },
+        purple: { stored: 'purple', css: '--lavender' },
+        pink: { stored: 'pink', css: '--coral' }
+      };
+      const validColors = new Set(['pink', 'yellow', 'blue', 'purple']);
+      const validStatuses = new Set(['pending', 'resolved']);
+      const form = document.querySelector('#reason-form');
+      const reasonInput = document.querySelector('#reason-input');
+      const bottleStars = document.querySelector('#bottle-stars');
+      const pendingList = document.querySelector('#pending-list');
+      const resolvedList = document.querySelector('#resolved-list');
+      const emptyBottle = document.querySelector('.empty-note');
+      const pendingEmpty = pendingList.nextElementSibling;
+      const resolvedEmpty = resolvedList.nextElementSibling;
+      const counts = document.querySelectorAll('.count');
+      const status = document.querySelector('#status');
+
+      function announce(message) {
+        status.textContent = message;
+      }
+
+      function dateLabel(dateValue) {
+        const date = new Date(dateValue);
+        return Number.isNaN(date.getTime()) ? '未知日期' : date.toLocaleDateString('zh-CN');
+      }
+
+      function mappedColor(color) {
+        return colorMap[color] || colorMap.sun;
+      }
+
+      function createId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+          return window.crypto.randomUUID();
+        }
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function loadStars() {
+        try {
+          const raw = window.localStorage.getItem(storageKey);
+          if (raw === null) return [];
+          const stars = JSON.parse(raw);
+          if (!Array.isArray(stars)) throw new Error('Stored value is not an array');
+          return stars.filter((star) => star && typeof star === 'object' && validColors.has(star.color) && validStatuses.has(star.status));
+        } catch (error) {
+          announce('读取星星时出了点问题，已从空瓶重新开始。');
+          return [];
+        }
+      }
+
+      function saveStars(stars) {
+        try {
+          window.localStorage.setItem(storageKey, JSON.stringify(stars));
+          return true;
+        } catch (error) {
+          announce('暂时没有存好这颗星星，请稍后再试。');
+          return false;
+        }
+      }
+
+      function createStar(reason, color) {
+        const mapped = mappedColor(color);
+        return {
+          id: createId(),
+          reason: reason.trim(),
+          color: mapped.stored,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+          solution: '',
+          resolvedAt: null
+        };
+      }
+
+      function makeCard(star, isResolved) {
+        const card = document.createElement('article');
+        card.className = isResolved ? 'note-card resolved-card' : 'note-card';
+        card.style.display = 'block';
+        const date = document.createElement('p');
+        date.className = 'count';
+        date.textContent = isResolved ? `解决于 ${dateLabel(star.resolvedAt)}` : `折于 ${dateLabel(star.createdAt)}`;
+        const reason = document.createElement('p');
+        reason.textContent = star.reason;
+        card.append(date, reason);
+        return card;
+      }
+
+      function render(stars) {
+        const pending = stars.filter((star) => star.status === 'pending');
+        const resolved = stars.filter((star) => star.status === 'resolved');
+        bottleStars.replaceChildren();
+        pendingList.replaceChildren();
+        resolvedList.replaceChildren();
+
+        pending.forEach((star) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'star';
+          button.style.setProperty('--star-color', `var(${mappedColor(star.color).css})`);
+          button.setAttribute('aria-label', `查看星星，${dateLabel(star.createdAt)}折成`);
+          bottleStars.append(button);
+          pendingList.append(makeCard(star, false));
+        });
+        resolved.forEach((star) => resolvedList.append(makeCard(star, true)));
+
+        emptyBottle.hidden = pending.length > 0;
+        pendingEmpty.hidden = pending.length > 0;
+        resolvedEmpty.hidden = resolved.length > 0;
+        counts[0].textContent = `${pending.length} 颗`;
+        counts[1].textContent = `${resolved.length} 颗`;
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const reason = reasonInput.value.trim();
+        if (!reason) {
+          announce('请先写下让你生气的原因，再折成星星。');
+          return;
+        }
+        const selected = form.elements['star-color'].value;
+        const stars = loadStars();
+        const nextStars = [...stars, createStar(reason, selected)];
+        if (saveStars(nextStars)) {
+          render(nextStars);
+          form.reset();
+          announce('这颗星星已经安静地放进瓶子里了。');
+        }
+      });
+
+      window.loadStars = loadStars;
+      window.saveStars = saveStars;
+      window.createStar = createStar;
+      window.render = render;
+      render(loadStars());
+    })();
+  </script>
 </body>
 </html>
