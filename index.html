@@ -207,13 +207,22 @@
         return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       }
 
+      function isValidStarEntry(star) {
+        if (!star || typeof star !== 'object') return false;
+        if (typeof star.id !== 'string' || typeof star.reason !== 'string' || typeof star.createdAt !== 'string' || typeof star.solution !== 'string') return false;
+        if (!validColors.has(star.color) || !validStatuses.has(star.status)) return false;
+        if (star.status === 'pending') return star.resolvedAt === null;
+        return typeof star.resolvedAt === 'string';
+      }
+
       function loadStars() {
         try {
           const raw = window.localStorage.getItem(storageKey);
           if (raw === null) return [];
           const stars = JSON.parse(raw);
           if (!Array.isArray(stars)) throw new Error('Stored value is not an array');
-          return stars.filter((star) => star && typeof star === 'object' && validColors.has(star.color) && validStatuses.has(star.status));
+          if (!stars.every(isValidStarEntry)) throw new Error('Stored array contains an invalid entry');
+          return stars;
         } catch (error) {
           announce('读取星星时出了点问题，已从空瓶重新开始。');
           return [];
