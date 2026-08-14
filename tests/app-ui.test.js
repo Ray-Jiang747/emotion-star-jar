@@ -51,6 +51,7 @@ const queriedIds = [
   'opened-star-art', 'open-color', 'open-star-title', 'open-star-emotion', 'open-star-reason',
   'open-star-intensity', 'open-star-created', 'open-actions', 'return-star', 'show-solution',
   'solution-panel', 'solution-text', 'solution-error', 'resolve-star', 'archive-grid', 'archive-empty'
+  , 'open-picker', 'star-choice', 'open-selected-star', 'open-random-star'
 ];
 
 function installBrowser(seed = []) {
@@ -169,4 +170,37 @@ test('opening a star with an invalid stored date uses a safe fallback', async ()
 
   assert.doesNotThrow(() => app.openRandomStar());
   assert.equal(browser.elements.get('open-star-created').textContent, '日期未知');
+});
+
+test('opening view waits for a choice and lists only pending stars', async () => {
+  const browser = installBrowser([
+    { id: 'first', title: '第一颗', reason: '待回应一', status: 'pending', emotion: 'sad' },
+    { id: 'second', title: '第二颗', reason: '待回应二', status: 'pending', emotion: 'happy' },
+    { id: 'done', title: '已完成', reason: '不应出现', status: 'resolved', solution: '完成' }
+  ]);
+  const app = await loadApp('open-picker');
+
+  app.navigate('open');
+
+  assert.equal(browser.elements.get('open-stage').hidden, true);
+  assert.equal(browser.elements.get('open-picker').hidden, false);
+  assert.equal(browser.elements.get('star-choice').children.length, 2);
+  assert.match(browser.elements.get('star-choice').children[0].textContent, /难过.*第一颗/);
+});
+
+test('opens the pending star selected by id', async () => {
+  const browser = installBrowser([
+    { id: 'first', title: '第一颗', reason: '待回应一', status: 'pending' },
+    { id: 'second', title: '第二颗', reason: '待回应二', status: 'pending' }
+  ]);
+  const app = await loadApp('open-selected');
+  app.prepareOpenView();
+  browser.elements.get('star-choice').value = 'second';
+
+  const selected = app.openSelectedStar();
+
+  assert.equal(selected.id, 'second');
+  assert.equal(browser.elements.get('open-star-title').textContent, '第二颗');
+  assert.equal(browser.elements.get('open-stage').hidden, false);
+  assert.equal(browser.elements.get('open-picker').hidden, true);
 });

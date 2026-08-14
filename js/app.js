@@ -1,4 +1,4 @@
-import { createStarStore, filterResolved } from './star-store.js';
+import { createStarStore, filterResolved } from './star-store.js?v=5';
 import { createViewState } from './view-state.js';
 import { createStarLayout } from './star-layout.js';
 import { EMOTIONS, getEmotion, getEmotionLabel } from './emotion-catalog.js';
@@ -31,6 +31,10 @@ const toast = document.querySelector('#toast');
 let draftStar = null;
 let interactionLocked = false;
 const openEmpty = document.querySelector('#open-empty');
+const openPicker = document.querySelector('#open-picker');
+const starChoice = document.querySelector('#star-choice');
+const openSelectedStarButton = document.querySelector('#open-selected-star');
+const openRandomStarButton = document.querySelector('#open-random-star');
 const openStage = document.querySelector('#open-stage');
 const openedStarArt = document.querySelector('#opened-star-art');
 const openColor = document.querySelector('#open-color');
@@ -190,18 +194,43 @@ export async function commitFoldedStar() {
   }
 }
 
-export function openRandomStar() {
-  openedStar = store.pickRandomPending();
+export function prepareOpenView() {
+  const pending = store.pending();
+  openedStar = null;
   solutionPanel.hidden = true;
   openActions.hidden = false;
   solutionText.value = '';
   solutionError.textContent = '';
   openStage.classList.remove('is-returning', 'is-dissolving');
-  if (!openedStar) {
-    openStage.hidden = true;
-    openEmpty.hidden = false;
+  openStage.hidden = true;
+  openPicker.hidden = pending.length === 0;
+  openEmpty.hidden = pending.length !== 0;
+  starChoice.disabled = pending.length === 0;
+  openSelectedStarButton.disabled = pending.length === 0;
+  starChoice.replaceChildren(...pending.map((star) => {
+    const option = document.createElement('option');
+    option.value = star.id;
+    const summary = star.title || `${star.reason.slice(0, 24)}${star.reason.length > 24 ? '…' : ''}`;
+    option.textContent = `${getEmotionLabel(star)} · ${summary}`;
+    return option;
+  }));
+  if (pending[0]) starChoice.value = pending[0].id;
+  return pending.map((star) => ({ ...star }));
+}
+
+const displayOpenedStar = (star) => {
+  if (!star) {
+    prepareOpenView();
+    showToast('这颗星星已经不在待回应列表里，请重新选择');
     return null;
   }
+  openedStar = star;
+  solutionPanel.hidden = true;
+  openActions.hidden = false;
+  solutionText.value = '';
+  solutionError.textContent = '';
+  openStage.classList.remove('is-returning', 'is-dissolving');
+  openPicker.hidden = true;
   openEmpty.hidden = true;
   openStage.hidden = false;
   openStage.classList.add('is-opening');
@@ -216,6 +245,14 @@ export function openRandomStar() {
   openStarIntensity.textContent = `${openedStar.intensity} / 100`;
   openStarCreated.textContent = formatDate(openedStar.createdAt);
   return { ...openedStar };
+};
+
+export function openRandomStar() {
+  return displayOpenedStar(store.pickRandomPending());
+}
+
+export function openSelectedStar(id = starChoice.value) {
+  return displayOpenedStar(store.findPending(id));
 }
 
 export async function returnOpenedStar() {
@@ -325,7 +362,7 @@ router.subscribe((activeView) => {
   });
   if (activeView === 'home') renderHome();
   if (activeView === 'write') resetWriteView();
-  if (activeView === 'open') openRandomStar();
+  if (activeView === 'open') prepareOpenView();
   if (activeView === 'archive') renderArchive();
   document.querySelector(`#view-${activeView} h1, #view-${activeView} h2`)?.focus?.();
 });
@@ -350,6 +387,8 @@ customEmotionInput.addEventListener('input', () => { if (customEmotionInput.valu
 intensityInput.addEventListener('input', () => { intensityOutput.textContent = intensityInput.value; });
 form.addEventListener('submit', (event) => { event.preventDefault(); if (!interactionLocked) startFold(); });
 commitStarButton.addEventListener('click', () => { void commitFoldedStar(); });
+openSelectedStarButton.addEventListener('click', () => { openSelectedStar(); });
+openRandomStarButton.addEventListener('click', () => { openRandomStar(); });
 returnStarButton.addEventListener('click', () => { void returnOpenedStar(); });
 showSolutionButton.addEventListener('click', () => {
   openActions.hidden = true;

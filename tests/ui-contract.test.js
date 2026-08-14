@@ -44,3 +44,15 @@ test('copy and form accessibility match the approved UI contract', async () => {
     assert.match(html, new RegExp(`<h[12][^>]*id="${id}"[^>]*tabindex="-1"`));
   }
 });
+
+test('open view offers both selected and random star actions on mobile', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+
+  assert.match(html, /<label[^>]*for="star-choice"/);
+  assert.match(html, /<select[^>]*id="star-choice"/);
+  assert.match(html, /id="open-selected-star"[^>]*>打开选择的星星</);
+  assert.match(html, /id="open-random-star"[^>]*>随机抽一颗</);
+  assert.match(css, /\.open-picker\s*\{[^}]*min-width:\s*0[^}]*max-width:\s*100%/s);
+  assert.match(css, /\.open-picker select\s*\{[^}]*min-height:\s*44px[^}]*min-width:\s*0[^}]*max-width:\s*100%/s);
+});

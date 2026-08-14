@@ -1,17 +1,17 @@
-const CACHE_NAME = 'emotion-star-jar-pwa-v4';
+const CACHE_NAME = 'emotion-star-jar-pwa-v5';
 const APP_SHELL = [
   './',
   './index.html',
   './install.html',
   './manifest.webmanifest',
-  './styles.css?v=3',
+  './styles.css?v=5',
   './install.css?v=3',
-  './js/app.js?v=4',
+  './js/app.js?v=5',
   './js/emotion-catalog.js',
   './js/install.js',
   './js/pwa-register.js',
   './js/star-layout.js',
-  './js/star-store.js',
+  './js/star-store.js?v=5',
   './js/view-state.js',
   './assets/icon-192.png',
   './assets/icon-512.png',

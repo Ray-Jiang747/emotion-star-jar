@@ -65,6 +65,8 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
     return open[Math.floor(randomFn() * open.length)];
   };
 
+  const findPending = (id) => pending().find((star) => star.id === String(id || '')) || null;
+
   const resolve = (id, solution) => {
     const text = String(solution || '').trim();
     if (!text) throw new Error('请写下回应内容');
@@ -80,5 +82,5 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
     return { ...resolvedStar };
   };
 
-  return { list, pending, resolved, add, pickRandomPending, resolve, save };
+  return { list, pending, resolved, add, pickRandomPending, findPending, resolve, save };
 }

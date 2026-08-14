@@ -38,6 +38,18 @@ test('random selection never returns a resolved star', () => {
   assert.equal(store.pickRandomPending().id, 'open');
 });
 
+test('finds a selected pending star but never returns resolved or missing records', () => {
+  const storage = memoryStorage([
+    { id: 'pending', reason: '还没回应', status: 'pending' },
+    { id: 'resolved', reason: '已经回应', status: 'resolved', solution: '完成' }
+  ]);
+  const store = createStarStore(storage, () => 0);
+
+  assert.equal(store.findPending('pending').id, 'pending');
+  assert.equal(store.findPending('resolved'), null);
+  assert.equal(store.findPending('missing'), null);
+});
+
 test('resolve requires a solution and moves the star to resolved', () => {
   const storage = memoryStorage([{ id: 'open', reason: '新问题', status: 'pending' }]);
   const store = createStarStore(storage, () => 0);

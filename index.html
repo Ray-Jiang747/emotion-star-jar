@@ -10,7 +10,7 @@
   <title>情绪星星瓶</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
-  <link rel="stylesheet" href="./styles.css?v=3">
+  <link rel="stylesheet" href="./styles.css?v=5">
 </head>
 <body>
   <div class="cosmos" aria-hidden="true"></div>
@@ -116,8 +116,22 @@
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
         <div><p class="eyebrow">准备好时，再轻轻打开</p><h2 id="open-title" tabindex="-1">拆开一颗星星</h2></div>
-        <span class="step-label">随机打开一颗待回应星星</span>
+        <span class="step-label">随机或指定打开一颗星星</span>
       </header>
+
+      <section id="open-picker" class="open-picker" aria-labelledby="open-picker-title">
+        <div class="open-picker-copy">
+          <p class="eyebrow">从瓶子里轻轻挑选</p>
+          <h3 id="open-picker-title">你想打开哪一颗？</h3>
+          <p>可以按记录选择，也可以把这一次交给随机。</p>
+        </div>
+        <label for="star-choice">选择一颗待回应星星</label>
+        <select id="star-choice"></select>
+        <div class="open-picker-actions">
+          <button id="open-selected-star" class="primary-action" type="button">打开选择的星星</button>
+          <button id="open-random-star" class="secondary-action" type="button">随机抽一颗</button>
+        </div>
+      </section>
 
       <div id="open-empty" class="empty-card" hidden>
         <img src="./assets/kitty-companion.webp" alt="抱着星星的猫咪伙伴" loading="lazy" decoding="async">
@@ -127,7 +141,7 @@
 
       <div id="open-stage" class="open-layout" hidden>
         <div class="opened-star-wrap">
-          <img id="opened-star-art" src="./assets/origami-star-cute.webp" alt="随机抽出的可爱情绪星星" loading="lazy" decoding="async">
+          <img id="opened-star-art" src="./assets/origami-star-cute.webp" alt="打开的可爱情绪星星" loading="lazy" decoding="async">
         </div>
         <article class="unfolded-paper">
           <div class="paper-heading"><span id="open-color" class="color-swatch pink"></span><div><p id="open-star-emotion" class="eyebrow"></p><h3 id="open-star-title"></h3></div></div>
@@ -171,7 +185,7 @@
     </section>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="./js/app.js?v=4"></script>
+  <script type="module" src="./js/app.js?v=5"></script>
   <script type="module" src="./js/pwa-register.js"></script>
 </body>
 </html>

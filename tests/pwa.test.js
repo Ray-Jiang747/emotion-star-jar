@@ -63,7 +63,8 @@ test('PWA exposes install metadata, prompt behavior, and an offline shell', asyn
   let installWork;
   listeners.get('install')({ waitUntil: (promise) => { installWork = promise; } });
   await installWork;
+  const cachedPathnames = cachedPaths.map((path) => path.split('?')[0]);
   for (const relativePath of ['./index.html', './install.html', './manifest.webmanifest', './js/app.js']) {
-    assert.equal(cachedPaths.includes(relativePath), true, `${relativePath} must be precached`);
+    assert.equal(cachedPathnames.includes(relativePath), true, `${relativePath} must be precached`);
   }
 });
