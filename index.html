@@ -69,6 +69,17 @@
     @media (prefers-reduced-motion:no-preference) { .star { animation:star-float 4.6s ease-in-out infinite; animation-delay:calc(var(--tilt,0deg) * .01s); } .star-departure { position:fixed; z-index:20; margin:0; pointer-events:none; animation:star-departure .52s ease-in forwards; } @keyframes star-float { 50% { translate:0 -5px; } } @keyframes star-departure { to { opacity:0; transform:translateY(-52px) rotate(18deg) scale(.62); } } }
     @media (min-width:521px) { dialog { border-bottom:1px solid var(--sheet-edge); border-radius:28px; margin:auto; } }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.01ms !important; } }
+    /* 宽屏产品展示版：严格对齐设计参考图的三栏构图。 */
+    @media (min-width:900px) {
+      html,body { min-width:1180px; background:#0c1235; }
+      .app-shell { min-height:1317px; background:url('assets/star-jar-reference.png') center top / min(100%,1192px) auto no-repeat #0c1235; }
+      .app-shell::before,.app-shell::after,main { display:none; }
+      .floating-action { position:absolute; right:7.2%; bottom:5%; width:255px; min-height:92px; justify-content:center; border-radius:48px; font-size:1.18rem; color:transparent; background:transparent; box-shadow:none; }
+      .floating-action::before { display:none; }
+      .history-trigger { position:absolute; z-index:12; left:3%; bottom:4%; width:66%; height:27%; transform:none; opacity:0; }
+      .history-trigger::after { display:none; }
+      dialog { z-index:30; }
+    }
   </style>
 </head>
 <body>
