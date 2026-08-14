@@ -49,3 +49,10 @@ test('filters resolved records by color', () => {
   assert.equal(filterResolved(rows, 'pink').length, 1);
   assert.equal(filterResolved(rows, 'all').length, 2);
 });
+
+test('add rejects empty reason and clamps intensity', () => {
+  const store = createStarStore(memoryStorage(), () => 0);
+  assert.throws(() => store.add({ reason: '   ' }), /生气原因/);
+  const star = store.add({ reason: '压力很大', intensity: 160, color: 'blue' });
+  assert.equal(star.intensity, 100);
+});

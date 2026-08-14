@@ -8,7 +8,7 @@ export function normalizeStar(raw = {}) {
     id: String(raw.id || createId()),
     title: String(raw.title || '').trim(),
     reason: String(raw.reason || '').trim(),
-    intensity: Number.isFinite(Number(raw.intensity)) ? Number(raw.intensity) : 60,
+    intensity: Number.isFinite(Number(raw.intensity)) ? Math.min(100, Math.max(0, Number(raw.intensity))) : 60,
     color: COLORS.has(raw.color) ? raw.color : 'pink',
     createdAt: raw.createdAt || new Date().toISOString(),
     status: raw.status === 'resolved' ? 'resolved' : 'pending',
@@ -41,6 +41,7 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
 
   const add = (input) => {
     const star = normalizeStar({ ...input, id: createId(), status: 'pending', createdAt: new Date().toISOString() });
+    if (!star.reason) throw new Error('请先写下生气原因');
     stars.push(star);
     save();
     return { ...star };
