@@ -84,11 +84,24 @@
     .empty-state { margin: 0; color: var(--muted); font-size: .98rem; }
     .note-list { display: flex; flex-wrap: wrap; gap: 8px; }
     .note-list > * { display: none; }
+    .note-card { width: 100%; border: 1px dashed rgba(197, 142, 139, .44); border-radius: 13px; padding: 10px 12px; color: var(--ink); background: rgba(255,255,255,.52); text-align: left; font: inherit; }
+    button.note-card { cursor: pointer; }
+    button.note-card:focus-visible { outline: 3px solid var(--blush-deep); outline-offset: 3px; }
+    .note-card > span { display: block; margin: 0 0 5px; }
+    .note-card > span:last-child { margin-bottom: 0; }
+    .resolved-card { border-style: solid; border-color: rgba(168, 216, 223, .75); }
     dialog { width: min(420px, calc(100% - 28px)); border: 1px solid var(--blush-deep); border-radius: 20px; padding: 22px; color: var(--ink); background: var(--paper); box-shadow: var(--shadow); }
     dialog::backdrop { background: rgba(85, 63, 68, .3); }
     dialog h2 { margin-bottom: 12px; }
     dialog textarea { min-height: 100px; margin-bottom: 14px; }
     .status { min-height: 1.6em; margin: 12px 2px 0; color: var(--muted); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .star-departure { position: fixed; z-index: 20; margin: 0; pointer-events: none; animation: star-departure .52s ease-in forwards; }
+      @keyframes star-departure {
+        to { opacity: 0; transform: translateY(-48px) rotate(18deg) scale(.62); }
+      }
+    }
 
     @media (min-width: 720px) {
       .layout { grid-template-columns: minmax(260px, .9fr) minmax(320px, 1.1fr); align-items: start; }
@@ -155,6 +168,7 @@
     <dialog id="star-dialog" aria-labelledby="dialog-heading">
       <form method="dialog">
         <h2 id="dialog-heading">给这颗星星一句回应</h2>
+        <p id="dialog-reason" class="status"></p>
         <label for="solution-input" class="section-label">我准备这样照顾自己……</label>
         <textarea id="solution-input" name="solution" placeholder="比如：先喝一杯水，再休息十分钟。"></textarea>
         <button id="resolve-star" class="resolve-button" value="resolve" type="submit">解决啦</button>
@@ -186,6 +200,9 @@
       const resolvedEmpty = resolvedList.nextElementSibling;
       const counts = document.querySelectorAll('.count');
       const status = document.querySelector('#status');
+      const starDialog = document.querySelector('#star-dialog');
+      const dialogReason = document.querySelector('#dialog-reason');
+      const solutionInput = document.querySelector('#solution-input');
 
       function announce(message) {
         status.textContent = message;
@@ -193,7 +210,7 @@
 
       function dateLabel(dateValue) {
         const date = new Date(dateValue);
-        return Number.isNaN(date.getTime()) ? '未知日期' : date.toLocaleDateString('zh-CN');
+        return Number.isNaN(date.getTime()) ? '未知日期' : new Intl.DateTimeFormat('zh-CN', { dateStyle: 'medium', timeStyle: 'short' }).format(date);
       }
 
       function mappedColor(color) {
@@ -253,15 +270,30 @@
       }
 
       function makeCard(star, isResolved) {
-        const card = document.createElement('article');
+        const card = document.createElement(isResolved ? 'article' : 'button');
+        if (!isResolved) card.type = 'button';
         card.className = isResolved ? 'note-card resolved-card' : 'note-card';
         card.style.display = 'block';
-        const date = document.createElement('p');
-        date.className = 'count';
-        date.textContent = isResolved ? `解决于 ${dateLabel(star.resolvedAt)}` : `折于 ${dateLabel(star.createdAt)}`;
-        const reason = document.createElement('p');
+        const reason = document.createElement('span');
         reason.textContent = star.reason;
-        card.append(date, reason);
+        if (isResolved) {
+          const solution = document.createElement('span');
+          solution.textContent = `我的回应：${star.solution}`;
+          const created = document.createElement('span');
+          created.className = 'count';
+          created.textContent = `折于 ${dateLabel(star.createdAt)}`;
+          const resolved = document.createElement('span');
+          resolved.className = 'count';
+          resolved.textContent = `解决于 ${dateLabel(star.resolvedAt)}`;
+          card.append(reason, solution, created, resolved);
+        } else {
+          const date = document.createElement('span');
+          date.className = 'count';
+          date.textContent = `折于 ${dateLabel(star.createdAt)}`;
+          card.append(reason, date);
+          card.setAttribute('aria-label', `回应这颗星星：${star.reason}`);
+          card.addEventListener('click', () => openStar(star.id));
+        }
         return card;
       }
 
@@ -277,17 +309,68 @@
           button.type = 'button';
           button.className = 'star';
           button.style.setProperty('--star-color', `var(${mappedColor(star.color).css})`);
-          button.setAttribute('aria-label', `查看星星，${dateLabel(star.createdAt)}折成`);
+          button.dataset.starId = star.id;
+          button.setAttribute('aria-label', `回应星星：${star.reason}`);
+          button.addEventListener('click', () => openStar(star.id));
           bottleStars.append(button);
           pendingList.append(makeCard(star, false));
         });
-        resolved.forEach((star) => resolvedList.append(makeCard(star, true)));
+        resolved
+          .sort((first, second) => new Date(second.resolvedAt).getTime() - new Date(first.resolvedAt).getTime())
+          .forEach((star) => resolvedList.append(makeCard(star, true)));
 
         emptyBottle.hidden = pending.length > 0;
         pendingEmpty.hidden = pending.length > 0;
         resolvedEmpty.hidden = resolved.length > 0;
         counts[0].textContent = `${pending.length} 颗`;
         counts[1].textContent = `${resolved.length} 颗`;
+      }
+
+      function openStar(id) {
+        const star = loadStars().find((entry) => entry.id === id && entry.status === 'pending');
+        if (!star) return;
+        starDialog.dataset.starId = star.id;
+        dialogReason.textContent = `这颗星星写着：${star.reason}`;
+        solutionInput.value = '';
+        starDialog.showModal();
+        solutionInput.focus();
+      }
+
+      function animateDeparture(star) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const source = bottleStars.querySelector(`[data-star-id="${star.id}"]`);
+        if (!source) return;
+        const bounds = source.getBoundingClientRect();
+        const departure = source.cloneNode();
+        departure.classList.add('star-departure');
+        departure.removeAttribute('data-star-id');
+        departure.setAttribute('aria-hidden', 'true');
+        departure.style.left = `${bounds.left}px`;
+        departure.style.top = `${bounds.top}px`;
+        document.body.append(departure);
+        departure.addEventListener('animationend', () => departure.remove(), { once: true });
+        window.setTimeout(() => departure.remove(), 700);
+      }
+
+      function resolveStar(id, solution) {
+        const trimmedSolution = solution.trim();
+        if (!trimmedSolution) {
+          announce('写下你是怎么解决的，再让这颗星星离开瓶子吧。');
+          return false;
+        }
+        const stars = loadStars();
+        const target = stars.find((star) => star.id === id && star.status === 'pending');
+        if (!target) return false;
+        const resolvedAt = new Date().toISOString();
+        const nextStars = stars.map((star) => star.id === id
+          ? { ...star, status: 'resolved', solution: trimmedSolution, resolvedAt }
+          : star);
+        if (!saveStars(nextStars)) return false;
+        animateDeparture(target);
+        starDialog.close();
+        render(nextStars);
+        announce('这颗星星已经带着你的回应，轻轻离开瓶子了。');
+        return true;
       }
 
       form.addEventListener('submit', (event) => {
@@ -307,10 +390,17 @@
         }
       });
 
+      starDialog.querySelector('form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        resolveStar(starDialog.dataset.starId, solutionInput.value);
+      });
+
       window.loadStars = loadStars;
       window.saveStars = saveStars;
       window.createStar = createStar;
       window.render = render;
+      window.openStar = openStar;
+      window.resolveStar = resolveStar;
       render(loadStars());
     })();
   </script>
