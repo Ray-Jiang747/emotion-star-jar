@@ -4,7 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1233">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="星星瓶">
   <title>情绪星星瓶</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -167,5 +172,6 @@
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/pwa-register.js"></script>
 </body>
 </html>

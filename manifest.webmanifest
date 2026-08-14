@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "我的情绪星星瓶",
+  "short_name": "星星瓶",
+  "description": "把每一种情绪折成星星，慢慢认识自己。",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08102d",
+  "theme_color": "#08102d",
+  "orientation": "any",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

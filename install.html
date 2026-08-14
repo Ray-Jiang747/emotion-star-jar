@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08102d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="星星瓶">
+  <title>安装情绪星星瓶</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="stylesheet" href="./install.css">
+</head>
+<body>
+  <main class="install-shell">
+    <section class="install-card" aria-labelledby="install-title">
+      <img class="app-icon" src="./assets/icon-192.png" alt="情绪星星瓶应用图标">
+      <p class="eyebrow">把情绪轻轻收好</p>
+      <h1 id="install-title">安装情绪星星瓶</h1>
+      <p class="intro">把每一种情绪折成星星，安装到手机桌面后，可以像普通软件一样独立打开。</p>
+
+      <button id="install-action" class="primary-action" type="button" disabled>安装到手机</button>
+      <p id="install-status" class="status" role="status">正在检查浏览器安装能力…</p>
+
+      <section id="ios-guide" class="guide" hidden>
+        <h2>在 iPhone 或 iPad 上安装</h2>
+        <ol>
+          <li>点击 Safari 底部的“分享”按钮。</li>
+          <li>向下找到“添加到主屏幕”。</li>
+          <li>确认名称后点击“添加”。</li>
+        </ol>
+      </section>
+
+      <section id="manual-guide" class="guide">
+        <h2>没有看到安装按钮？</h2>
+        <p>打开浏览器菜单，选择“安装应用”或“添加到主屏幕”。不同浏览器的名称可能略有不同。</p>
+      </section>
+
+      <section id="installed-panel" class="installed" hidden>
+        <strong>已经安装</strong>
+        <p>现在可以从手机桌面直接打开情绪星星瓶。</p>
+      </section>
+
+      <p class="privacy-note">星星记录只保存在当前设备。清理浏览器或应用数据可能删除记录，设备之间不会自动同步。</p>
+      <a class="open-app" href="./index.html">打开情绪星星瓶</a>
+    </section>
+  </main>
+  <script type="module" src="./js/install.js"></script>
+  <script type="module" src="./js/pwa-register.js"></script>
+</body>
+</html>
