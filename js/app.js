@@ -1,5 +1,6 @@
 import { createStarStore, filterResolved } from './star-store.js';
 import { createViewState } from './view-state.js';
+import { createStarLayout } from './star-layout.js';
 
 const store = createStarStore();
 const router = createViewState('home');
@@ -48,24 +49,17 @@ let archiveFilter = 'all';
 const colorLabels = { pink: '粉色', yellow: '黄色', blue: '蓝色', purple: '紫色', mint: '薄荷色' };
 const formatDate = (value) => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 
-const starPosition = (index) => ({
-  x: 14 + ((index * 37) % 72),
-  y: 10 + Math.floor(index / 7) * 12 + ((index * 11) % 9),
-  size: 48 + (index % 4) * 8,
-  rotate: -18 + ((index * 29) % 38),
-  duration: 3.2 + (index % 5) * .35
-});
-
 export function renderHome() {
   const pending = store.pending();
   const resolved = store.resolved();
+  const layout = createStarLayout(Math.min(pending.length, 42));
   pendingCount.textContent = pending.length;
   resolvedCount.textContent = resolved.length;
   archiveCount.textContent = resolved.length;
   homeEmpty.hidden = pending.length !== 0;
   openAction.disabled = pending.length === 0;
   starLayer.replaceChildren(...pending.slice(0, 42).map((star, index) => {
-    const position = starPosition(index);
+    const position = layout[index];
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `bottle-star ${star.color}`;
@@ -74,9 +68,10 @@ export function renderHome() {
     button.style.setProperty('--star-size', `${position.size}px`);
     button.style.setProperty('--star-rotate', `${position.rotate}deg`);
     button.style.setProperty('--star-duration', `${position.duration}s`);
+    button.style.zIndex = position.depth;
     button.setAttribute('aria-label', `待解决星星：${star.title || star.reason}`);
     const image = document.createElement('img');
-    image.src = './assets/origami-star.png';
+    image.src = './assets/origami-star-cute.png';
     image.alt = '';
     button.append(image);
     return button;
@@ -238,7 +233,7 @@ export function renderArchive(filter = archiveFilter) {
     const starVisual = document.createElement('span');
     starVisual.className = 'archive-star';
     const starImage = document.createElement('img');
-    starImage.src = './assets/origami-star.png';
+    starImage.src = './assets/origami-star-cute.png';
     starImage.alt = '';
     starVisual.append(starImage);
     const summary = document.createElement('span');
@@ -271,6 +266,7 @@ export function renderArchive(filter = archiveFilter) {
 }
 
 router.subscribe((activeView) => {
+  window.scrollTo({ top: 0, behavior: 'auto' });
   views.forEach((view, name) => {
     const isActive = name === activeView;
     view.hidden = !isActive;
