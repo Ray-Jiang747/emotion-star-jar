@@ -99,6 +99,15 @@ input[type="range"] { width: 100%; accent-color: var(--pink); }
 
 .open-layout { grid-template-columns: 350px 620px; gap: 44px; }
 .opened-star-wrap img { width: 300px; height: 300px; object-fit: contain; filter: drop-shadow(0 24px 30px rgba(255, 90, 177, .34)); }
+.opened-star-wrap img.yellow { filter: hue-rotate(56deg) saturate(1.15) drop-shadow(0 24px 30px rgba(255, 211, 106, .34)); }
+.opened-star-wrap img.blue { filter: hue-rotate(166deg) saturate(.95) drop-shadow(0 24px 30px rgba(130, 216, 255, .34)); }
+.opened-star-wrap img.purple { filter: hue-rotate(234deg) saturate(.9) drop-shadow(0 24px 30px rgba(181, 140, 255, .34)); }
+.opened-star-wrap img.mint { filter: hue-rotate(125deg) saturate(.72) drop-shadow(0 24px 30px rgba(156, 232, 206, .34)); }
+.open-layout.is-opening .opened-star-wrap { animation: opened-star-arrive .75s cubic-bezier(.2,.8,.2,1) both; }
+.open-layout.is-opening .unfolded-paper { animation: paper-unfold .72s .12s ease-out both; }
+.open-layout.is-returning { animation: return-to-bottle .62s ease-in both; }
+.open-layout.is-dissolving .opened-star-wrap { animation: dissolve-star .72s ease-in both; }
+.open-layout.is-dissolving .unfolded-paper { animation: fade-away .48s ease-in both; }
 .unfolded-paper { width: 620px; padding: 32px; }
 .paper-heading { display: flex; align-items: center; gap: 14px; }
 .paper-heading h3 { margin: 0; font-size: 25px; }
@@ -118,7 +127,16 @@ input[type="range"] { width: 100%; accent-color: var(--pink); }
 .filter-button.is-selected { color: #2a2043; background: var(--yellow); }
 .archive-total { color: #ffe09b; }
 .archive-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.archive-card { padding: 22px; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); }
+.archive-card { overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); box-shadow: 0 18px 34px rgba(0,0,0,.22); }
+.archive-card-toggle { display: grid; grid-template-columns: 70px 1fr; gap: 14px; width: 100%; padding: 20px; border: 0; color: inherit; text-align: left; background: transparent; }
+.archive-card-toggle small, .archive-card-toggle strong, .archive-card-toggle em { display: block; }
+.archive-card-toggle small { margin-bottom: 7px; color: var(--muted); font-size: 11px; }
+.archive-card-toggle strong { margin-bottom: 7px; font-size: 17px; }
+.archive-card-toggle em { overflow: hidden; color: #d9dcef; font-size: 13px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.archive-star img { width: 64px; height: 64px; object-fit: contain; }
+.archive-card.yellow .archive-star img { filter: hue-rotate(56deg) saturate(1.15); }.archive-card.blue .archive-star img { filter: hue-rotate(166deg) saturate(.95); }.archive-card.purple .archive-star img { filter: hue-rotate(234deg) saturate(.9); }.archive-card.mint .archive-star img { filter: hue-rotate(125deg) saturate(.72); }
+.archive-detail { margin: 0 20px 20px; padding: 16px 18px; border: 1px solid rgba(255, 199, 228, .2); border-radius: 16px; background: rgba(6,10,38,.45); }
+.archive-detail b { color: #ffdca1; }.archive-detail p { margin: 8px 0 12px; line-height: 1.7; }.archive-detail span { color: var(--muted); font-size: 11px; }
 .toast { position: fixed; z-index: 30; left: 50%; bottom: 26px; transform: translate(-50%, 30px); padding: 12px 22px; border: 1px solid var(--line); border-radius: 999px; background: #1b2254; opacity: 0; pointer-events: none; transition: .25s; }
 .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
@@ -127,4 +145,9 @@ input[type="range"] { width: 100%; accent-color: var(--pink); }
 @keyframes star-float { to { translate: 0 -7px; rotate: 4deg; } }
 @keyframes fold-guide-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes folded-star-pop { from { opacity: 0; transform: scale(.35) rotate(-80deg); } to { opacity: 1; transform: none; } }
+@keyframes opened-star-arrive { from { opacity: 0; transform: translate(-180px, 160px) scale(.25) rotate(-160deg); } to { opacity: 1; transform: none; } }
+@keyframes paper-unfold { from { opacity: 0; transform: perspective(900px) rotateY(78deg) scale(.75); } to { opacity: 1; transform: none; } }
+@keyframes return-to-bottle { to { opacity: 0; transform: translate(-280px, 130px) scale(.25); } }
+@keyframes dissolve-star { to { opacity: 0; transform: translateY(-130px) scale(.12) rotate(160deg); filter: blur(8px); } }
+@keyframes fade-away { to { opacity: 0; transform: translateY(20px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }

@@ -18,7 +18,9 @@ export function normalizeStar(raw = {}) {
 }
 
 export function filterResolved(stars, color = 'all') {
-  return stars.filter((star) => star.status === 'resolved' && (color === 'all' || star.color === color));
+  return stars
+    .filter((star) => star.status === 'resolved' && (color === 'all' || star.color === color))
+    .sort((a, b) => new Date(b.resolvedAt || 0) - new Date(a.resolvedAt || 0));
 }
 
 export function createStarStore(storage = globalThis.localStorage, randomFn = Math.random) {

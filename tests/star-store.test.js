@@ -56,3 +56,13 @@ test('add rejects empty reason and clamps intensity', () => {
   const star = store.add({ reason: '压力很大', intensity: 160, color: 'blue' });
   assert.equal(star.intensity, 100);
 });
+
+test('resolved archive is newest first without mutating source', () => {
+  const source = [
+    { id: 'old', status: 'resolved', color: 'pink', resolvedAt: '2026-08-13T10:00:00.000Z' },
+    { id: 'new', status: 'resolved', color: 'pink', resolvedAt: '2026-08-14T10:00:00.000Z' }
+  ];
+  const result = filterResolved(source, 'all');
+  assert.deepEqual(result.map((item) => item.id), ['new', 'old']);
+  assert.deepEqual(source.map((item) => item.id), ['old', 'new']);
+});
