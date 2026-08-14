@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a3b">
+  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070b1c">
   <title>我的情绪星星瓶</title>
   <style>
@@ -148,6 +150,11 @@
       [createSheet,historySheet,starDialog].forEach((sheet)=>sheet.addEventListener('close',()=>{const target=dialogReturnFocus; dialogReturnFocus=null; if (target && target.isConnected && !starDialog.open && !createSheet.open && !historySheet.open) target.focus();}));
       window.loadStars=loadStars; window.saveStars=saveStars; window.createStar=createStar; window.render=render; window.openStar=openStar; window.resolveStar=resolveStar; stars=loadStars(); render(stars);
     })();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   </script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+{
+  "name": "我的情绪星星瓶",
+  "short_name": "星星瓶",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070b1c",
+  "theme_color": "#101a3b",
+  "lang": "zh-CN"
+}
