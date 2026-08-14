@@ -18,6 +18,7 @@ const reasonInput = document.querySelector('#star-reason');
 const customEmotionField = document.querySelector('#custom-emotion-field');
 const customEmotionInput = document.querySelector('#custom-emotion');
 const reasonError = document.querySelector('#reason-error');
+const customEmotionError = document.querySelector('#custom-emotion-error');
 const reasonCount = document.querySelector('#reason-count');
 const intensityInput = document.querySelector('#star-intensity');
 const intensityOutput = document.querySelector('#intensity-output');
@@ -51,7 +52,16 @@ const filterButtons = [...document.querySelectorAll('[data-filter]')];
 let openedStar = null;
 let archiveFilter = 'all';
 const archiveFilters = new Set(['all', ...EMOTIONS.map(({ id }) => id)]);
-const formatDate = (value) => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+const formatDate = (value) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '日期未知';
+  try {
+    return new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(date);
+  } catch {
+    return '日期未知';
+  }
+};
+const STORAGE_ERROR_MESSAGE = '无法保存到浏览器，请检查存储空间或隐私设置后重试';
 
 export function renderHome() {
   const pending = store.pending();
@@ -64,21 +74,20 @@ export function renderHome() {
   openAction.disabled = pending.length === 0;
   starLayer.replaceChildren(...pending.slice(0, 42).map((star, index) => {
     const position = layout[index];
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = `bottle-star ${star.color}`;
-    button.style.left = `${position.x}%`;
-    button.style.bottom = `${position.y}%`;
-    button.style.setProperty('--star-size', `${position.size}px`);
-    button.style.setProperty('--star-rotate', `${position.rotate}deg`);
-    button.style.setProperty('--star-duration', `${position.duration}s`);
-    button.style.zIndex = position.depth;
-    button.setAttribute('aria-label', `待回应星星：${star.title || star.reason}`);
+    const decoration = document.createElement('span');
+    decoration.className = `bottle-star ${star.color}`;
+    decoration.style.left = `${position.x}%`;
+    decoration.style.bottom = `${position.y}%`;
+    decoration.style.setProperty('--star-size', `${position.size}px`);
+    decoration.style.setProperty('--star-rotate', `${position.rotate}deg`);
+    decoration.style.setProperty('--star-duration', `${position.duration}s`);
+    decoration.style.zIndex = position.depth;
+    decoration.setAttribute('aria-hidden', 'true');
     const image = document.createElement('img');
     image.src = './assets/origami-star-cute.png';
     image.alt = '';
-    button.append(image);
-    return button;
+    decoration.append(image);
+    return decoration;
   }));
 }
 
@@ -101,6 +110,7 @@ const resetWriteView = () => {
   writeSuccess.hidden = true;
   foldStage.classList.remove('is-folding');
   reasonError.textContent = '';
+  customEmotionError.textContent = '';
 };
 
 const flyStarIntoJar = async () => {
@@ -127,13 +137,15 @@ export function startFold() {
     reasonInput.focus();
     return false;
   }
+  reasonError.textContent = '';
   const emotion = new FormData(form).get('emotion');
   const customEmotion = customEmotionInput.value.trim();
   if (emotion === 'other' && !customEmotion) {
-    reasonError.textContent = '请填写情绪名称';
+    customEmotionError.textContent = '请填写情绪名称';
     customEmotionInput.focus();
     return false;
   }
+  customEmotionError.textContent = '';
   draftStar = {
     title: titleInput.value.trim(),
     reason,
@@ -152,19 +164,30 @@ export async function commitFoldedStar() {
   if (!draftStar || interactionLocked) return null;
   interactionLocked = true;
   commitStarButton.disabled = true;
-  const saved = store.add(draftStar);
-  await flyStarIntoJar();
-  foldStage.hidden = true;
-  writeSuccess.hidden = false;
-  form.reset();
-  customEmotionField.hidden = true;
-  intensityInput.value = '60';
-  intensityOutput.textContent = '60';
-  reasonCount.textContent = '0 / 120';
-  draftStar = null;
-  interactionLocked = false;
-  showToast('情绪星星已经收进瓶子里了');
-  return saved;
+  try {
+    let saved;
+    try {
+      saved = store.add(draftStar);
+    } catch {
+      showToast(STORAGE_ERROR_MESSAGE);
+      return null;
+    }
+    await flyStarIntoJar();
+    foldStage.hidden = true;
+    writeSuccess.hidden = false;
+    form.reset();
+    customEmotionField.hidden = true;
+    customEmotionError.textContent = '';
+    intensityInput.value = '60';
+    intensityOutput.textContent = '60';
+    reasonCount.textContent = '0 / 120';
+    draftStar = null;
+    showToast('情绪星星已经收进瓶子里了');
+    return saved;
+  } finally {
+    interactionLocked = false;
+    commitStarButton.disabled = false;
+  }
 }
 
 export function openRandomStar() {
@@ -218,16 +241,26 @@ export async function resolveOpenedStar() {
   interactionLocked = true;
   resolveStarButton.disabled = true;
   openStage.classList.add('is-dissolving');
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) await new Promise((resolve) => setTimeout(resolve, 720));
-  const resolved = store.resolve(openedStar.id, solution);
-  openedStar = null;
-  interactionLocked = false;
-  resolveStarButton.disabled = false;
-  renderHome();
-  renderArchive();
-  navigate('archive');
-  showToast('这份回应已经收入成长记录');
-  return resolved;
+  try {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) await new Promise((resolve) => setTimeout(resolve, 720));
+    let resolved;
+    try {
+      resolved = store.resolve(openedStar.id, solution);
+    } catch {
+      openStage.classList.remove('is-dissolving');
+      showToast(STORAGE_ERROR_MESSAGE);
+      return null;
+    }
+    openedStar = null;
+    renderHome();
+    renderArchive();
+    navigate('archive');
+    showToast('这份回应已经收入成长记录');
+    return resolved;
+  } finally {
+    interactionLocked = false;
+    resolveStarButton.disabled = false;
+  }
 }
 
 export function renderArchive(filter = archiveFilter) {
@@ -308,8 +341,12 @@ reasonInput.addEventListener('input', () => {
 });
 form.querySelectorAll('input[name="emotion"]').forEach((input) => input.addEventListener('change', () => {
   customEmotionField.hidden = input.value !== 'other' || !input.checked;
-  if (customEmotionField.hidden) customEmotionInput.value = '';
+  if (customEmotionField.hidden) {
+    customEmotionInput.value = '';
+    customEmotionError.textContent = '';
+  }
 }));
+customEmotionInput.addEventListener('input', () => { if (customEmotionInput.value.trim()) customEmotionError.textContent = ''; });
 intensityInput.addEventListener('input', () => { intensityOutput.textContent = intensityInput.value; });
 form.addEventListener('submit', (event) => { event.preventDefault(); if (!interactionLocked) startFold(); });
 commitStarButton.addEventListener('click', () => { void commitFoldedStar(); });

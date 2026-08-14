@@ -40,8 +40,9 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
     stars = [];
   }
 
-  const save = () => {
-    storage.setItem(STORAGE_KEY, JSON.stringify(stars));
+  const save = (nextStars = stars) => {
+    storage.setItem(STORAGE_KEY, JSON.stringify(nextStars));
+    stars = nextStars;
     return stars;
   };
 
@@ -54,8 +55,7 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
     if (!star.reason) throw new Error('请先写下发生的事情');
     if (star.emotion === 'other' && !star.customEmotion) throw new Error('请填写情绪名称');
     star.color = getEmotion(star.emotion).color;
-    stars.push(star);
-    save();
+    save([...stars, star]);
     return { ...star };
   };
 
@@ -68,13 +68,16 @@ export function createStarStore(storage = globalThis.localStorage, randomFn = Ma
   const resolve = (id, solution) => {
     const text = String(solution || '').trim();
     if (!text) throw new Error('请写下回应内容');
-    const star = stars.find((item) => item.id === id && item.status === 'pending');
-    if (!star) throw new Error('没有找到待解决星星');
-    star.status = 'resolved';
-    star.solution = text;
-    star.resolvedAt = new Date().toISOString();
-    save();
-    return { ...star };
+    const index = stars.findIndex((item) => item.id === id && item.status === 'pending');
+    if (index === -1) throw new Error('没有找到待解决星星');
+    const resolvedStar = {
+      ...stars[index],
+      status: 'resolved',
+      solution: text,
+      resolvedAt: new Date().toISOString()
+    };
+    save(stars.map((star, starIndex) => starIndex === index ? resolvedStar : star));
+    return { ...resolvedStar };
   };
 
   return { list, pending, resolved, add, pickRandomPending, resolve, save };

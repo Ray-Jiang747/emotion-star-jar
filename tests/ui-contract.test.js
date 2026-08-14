@@ -25,3 +25,22 @@ test('range input has a 44px mobile touch target', async () => {
   const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
   assert.match(css, /input\[type="range"\]\s*\{[^}]*min-height:\s*44px/s);
 });
+
+test('home grid and bottle opt out of intrinsic overflow at 320px', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.home-stage\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)[^}]*min-width:\s*0[^}]*max-width:\s*100%/s);
+  assert.match(css, /\.bottle-stage\s*\{[^}]*width:\s*min\(100%,\s*430px\)[^}]*min-width:\s*0[^}]*max-width:\s*100%/s);
+  assert.match(css, /@media\s*\(min-width:\s*768px\)[\s\S]*?\.bottle-stage\s*\{[^}]*width:\s*min\(100%,\s*470px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*1100px\)[\s\S]*?\.bottle-stage\s*\{[^}]*width:\s*min\(100%,\s*520px\)/);
+});
+
+test('copy and form accessibility match the approved UI contract', async () => {
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /把每一种情绪折成星星，慢慢认识自己/);
+  assert.match(html, /<textarea[^>]*id="star-reason"[^>]*aria-describedby="reason-error reason-count"/);
+  assert.match(html, /<input[^>]*id="custom-emotion"[^>]*aria-describedby="custom-emotion-error"/);
+  assert.match(html, /id="custom-emotion-error"[^>]*role="alert"/);
+  for (const id of ['home-title', 'write-title', 'open-title', 'archive-title']) {
+    assert.match(html, new RegExp(`<h[12][^>]*id="${id}"[^>]*tabindex="-1"`));
+  }
+});

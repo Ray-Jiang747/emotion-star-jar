@@ -20,6 +20,15 @@ test('adds and persists a normalized pending star', () => {
   assert.equal(storage.read()[0].reason, '没有被理解');
 });
 
+test('add leaves the in-memory collection unchanged when persistence fails', () => {
+  const storage = memoryStorage();
+  storage.setItem = () => { throw new Error('quota exceeded'); };
+  const store = createStarStore(storage, () => 0);
+
+  assert.throws(() => store.add({ reason: '这次写不进去', emotion: 'sad' }), /quota exceeded/);
+  assert.deepEqual(store.list(), []);
+});
+
 test('random selection never returns a resolved star', () => {
   const storage = memoryStorage([
     { id: 'done', reason: '旧问题', status: 'resolved', solution: '沟通', resolvedAt: '2026-08-14T10:00:00.000Z' },
@@ -38,6 +47,18 @@ test('resolve requires a solution and moves the star to resolved', () => {
   assert.equal(done.solution, '认真沟通');
   assert.ok(done.resolvedAt);
   assert.equal(store.pending().length, 0);
+});
+
+test('resolve leaves a pending star unchanged when persistence fails', () => {
+  const storage = memoryStorage([{ id: 'open', reason: '仍需回应', status: 'pending' }]);
+  storage.setItem = () => { throw new Error('storage blocked'); };
+  const store = createStarStore(storage, () => 0);
+
+  assert.throws(() => store.resolve('open', '先休息一下'), /storage blocked/);
+  assert.equal(store.pending().length, 1);
+  assert.equal(store.list()[0].status, 'pending');
+  assert.equal(store.list()[0].solution, '');
+  assert.equal(store.list()[0].resolvedAt, null);
 });
 
 test('filters resolved records by emotion', () => {

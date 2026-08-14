@@ -15,8 +15,8 @@
         <div class="brand-lockup">
           <img class="brand-mascot" src="./assets/kitty-head.png" alt="陪伴你的白色猫咪">
           <div>
-            <p class="eyebrow">把情绪轻轻收好</p>
-            <h1 id="home-title">情绪星星瓶</h1>
+            <p class="eyebrow">把每一种情绪折成星星，慢慢认识自己</p>
+            <h1 id="home-title" tabindex="-1">情绪星星瓶</h1>
             <p>每一颗星星，都是一次理解自己的机会。</p>
           </div>
         </div>
@@ -51,7 +51,7 @@
     <section id="view-write" class="view" data-view="write" aria-labelledby="write-title" hidden>
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
-        <div><p class="eyebrow">写下来，已经是在照顾自己</p><h2 id="write-title">折一颗情绪星星</h2></div>
+        <div><p class="eyebrow">写下来，已经是在照顾自己</p><h2 id="write-title" tabindex="-1">折一颗情绪星星</h2></div>
         <span class="step-label">记录 · 折叠 · 收好</span>
       </header>
 
@@ -60,7 +60,7 @@
           <label for="star-title">事件标题</label>
           <input id="star-title" maxlength="36" placeholder="例如：沟通时被误解了">
           <label for="star-reason">发生了什么？</label>
-          <textarea id="star-reason" maxlength="120" placeholder="把发生的事情和感受写下来……"></textarea>
+          <textarea id="star-reason" maxlength="120" aria-describedby="reason-error reason-count" placeholder="把发生的事情和感受写下来……"></textarea>
           <div class="field-meta"><span id="reason-error" class="error-text" role="alert"></span><span id="reason-count">0 / 120</span></div>
           <label for="star-intensity">情绪强度 <output id="intensity-output">60</output></label>
           <input id="star-intensity" type="range" min="0" max="100" value="60">
@@ -76,7 +76,8 @@
           </fieldset>
           <div id="custom-emotion-field" hidden>
             <label for="custom-emotion">这份情绪叫什么？</label>
-            <input id="custom-emotion" maxlength="16" placeholder="例如：期待">
+            <input id="custom-emotion" maxlength="16" aria-describedby="custom-emotion-error" placeholder="例如：期待">
+            <span id="custom-emotion-error" class="error-text" role="alert"></span>
           </div>
           <button class="primary-action" type="submit">开始折星星</button>
         </form>
@@ -109,7 +110,7 @@
     <section id="view-open" class="view" data-view="open" aria-labelledby="open-title" hidden>
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
-        <div><p class="eyebrow">准备好时，再轻轻打开</p><h2 id="open-title">拆开一颗星星</h2></div>
+        <div><p class="eyebrow">准备好时，再轻轻打开</p><h2 id="open-title" tabindex="-1">拆开一颗星星</h2></div>
         <span class="step-label">随机打开一颗待回应星星</span>
       </header>
 
@@ -144,7 +145,7 @@
     <section id="view-archive" class="view" data-view="archive" aria-labelledby="archive-title" hidden>
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
-        <div><p class="eyebrow">每一次回应，都是成长</p><h2 id="archive-title">成长记录</h2></div>
+        <div><p class="eyebrow">每一次回应，都是成长</p><h2 id="archive-title" tabindex="-1">成长记录</h2></div>
         <strong class="archive-total">已经回应 <span id="archive-count">0</span> 颗星星</strong>
       </header>
       <div class="archive-toolbar" role="group" aria-label="按情绪类型筛选">
