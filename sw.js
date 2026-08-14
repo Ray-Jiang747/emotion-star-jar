@@ -1,11 +1,11 @@
-const CACHE_NAME = 'emotion-star-jar-pwa-v1';
+const CACHE_NAME = 'emotion-star-jar-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',
   './install.html',
   './manifest.webmanifest',
-  './styles.css',
-  './install.css',
+  './styles.css?v=3',
+  './install.css?v=3',
   './js/app.js',
   './js/emotion-catalog.js',
   './js/install.js',
@@ -13,15 +13,8 @@ const APP_SHELL = [
   './js/star-layout.js',
   './js/star-store.js',
   './js/view-state.js',
-  './assets/empty-star-jar.png',
-  './assets/fold-journey-cute.png',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './assets/kitty-companion.png',
-  './assets/kitty-head.png',
-  './assets/kitty-star-jar.png',
-  './assets/origami-star-cute.png',
-  './assets/starfield-bg.png'
 ];
 
 self.addEventListener('install', (event) => {

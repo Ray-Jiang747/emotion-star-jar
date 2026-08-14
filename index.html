@@ -10,7 +10,7 @@
   <title>情绪星星瓶</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./assets/icon-192.png">
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./styles.css?v=3">
 </head>
 <body>
   <div class="cosmos" aria-hidden="true"></div>
@@ -18,7 +18,7 @@
     <section id="view-home" class="view is-active" data-view="home" aria-labelledby="home-title">
       <header class="home-header">
         <div class="brand-lockup">
-          <img class="brand-mascot" src="./assets/kitty-head.png" alt="陪伴你的白色猫咪">
+          <img class="brand-mascot" src="./assets/kitty-head.webp" alt="陪伴你的白色猫咪" decoding="async">
           <div>
             <p class="eyebrow">把每一种情绪折成星星，慢慢认识自己</p>
             <h1 id="home-title" tabindex="-1">情绪星星瓶</h1>
@@ -36,8 +36,8 @@
 
         <div id="bottle-stage" class="bottle-stage" aria-label="情绪星星瓶">
           <div id="star-layer" class="star-layer"></div>
-          <img class="empty-jar" src="./assets/kitty-star-jar.png" alt="带有猫咪蝴蝶结装饰的透明玻璃星星瓶">
-          <img class="jar-companion" src="./assets/kitty-companion.png" alt="抱着星星的猫咪伙伴">
+          <img class="empty-jar" src="./assets/kitty-star-jar.webp" alt="带有猫咪蝴蝶结装饰的透明玻璃星星瓶" decoding="async" fetchpriority="high">
+          <img class="jar-companion" src="./assets/kitty-companion.webp" alt="抱着星星的猫咪伙伴" decoding="async">
           <div id="home-empty" class="home-empty" hidden>
             <strong>瓶子还空着</strong>
             <span>写下第一颗情绪星星吧</span>
@@ -90,8 +90,8 @@
         <div id="fold-stage" class="fold-stage" hidden>
           <p class="eyebrow">慢慢折，把情绪收进纸里</p>
           <div class="fold-journey" aria-label="纸条经过折角、收紧，最终变成可爱星星的四步过程">
-            <img class="fold-journey-art" src="./assets/fold-journey-cute.png" alt="纸条折成可爱星星的四步过程">
-            <img id="folded-star" class="folded-star" src="./assets/origami-star-cute.png" alt="" aria-hidden="true">
+            <img class="fold-journey-art" src="./assets/fold-journey-cute.webp" alt="纸条折成可爱星星的四步过程" loading="lazy" decoding="async">
+            <img id="folded-star" class="folded-star" src="./assets/origami-star-cute.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">
             <div class="fold-step-labels" aria-hidden="true">
               <span class="fold-step-label">纸条</span>
               <span class="fold-step-label">折角</span>
@@ -99,12 +99,12 @@
               <span class="fold-step-label">完成</span>
             </div>
           </div>
-          <img id="fold-target-jar" class="fold-target-jar" src="./assets/kitty-star-jar.png" alt="等待收下星星的猫咪装饰小瓶子">
+          <img id="fold-target-jar" class="fold-target-jar" src="./assets/kitty-star-jar.webp" alt="等待收下星星的猫咪装饰小瓶子" loading="lazy" decoding="async">
           <button id="commit-star" class="primary-action" type="button">放进瓶子</button>
         </div>
 
         <div id="write-success" class="success-card" hidden>
-          <img src="./assets/origami-star-cute.png" alt="已收好的可爱星星">
+          <img src="./assets/origami-star-cute.webp" alt="已收好的可爱星星" loading="lazy" decoding="async">
           <h3>这颗情绪已经被好好收起来了</h3>
           <p>等你准备好时，可以再把它拆开看看。</p>
           <button class="primary-action" type="button" data-nav="home">回到星星瓶</button>
@@ -120,14 +120,14 @@
       </header>
 
       <div id="open-empty" class="empty-card" hidden>
-        <img src="./assets/kitty-companion.png" alt="抱着星星的猫咪伙伴">
+        <img src="./assets/kitty-companion.webp" alt="抱着星星的猫咪伙伴" loading="lazy" decoding="async">
         <h3>瓶子里暂时没有待回应星星</h3>
         <button class="primary-action" type="button" data-nav="write">写入一颗星星</button>
       </div>
 
       <div id="open-stage" class="open-layout" hidden>
         <div class="opened-star-wrap">
-          <img id="opened-star-art" src="./assets/origami-star-cute.png" alt="随机抽出的可爱情绪星星">
+          <img id="opened-star-art" src="./assets/origami-star-cute.webp" alt="随机抽出的可爱情绪星星" loading="lazy" decoding="async">
         </div>
         <article class="unfolded-paper">
           <div class="paper-heading"><span id="open-color" class="color-swatch pink"></span><div><p id="open-star-emotion" class="eyebrow"></p><h3 id="open-star-title"></h3></div></div>
@@ -164,7 +164,7 @@
         <button class="filter-button" type="button" data-filter="other">其他</button>
       </div>
       <div id="archive-empty" class="empty-card" hidden>
-        <img src="./assets/kitty-companion.png" alt="抱着星星的猫咪伙伴">
+        <img src="./assets/kitty-companion.webp" alt="抱着星星的猫咪伙伴" loading="lazy" decoding="async">
         <h3>回应第一颗星星后，成长记录会出现在这里</h3>
       </div>
       <div id="archive-grid" class="archive-grid"></div>

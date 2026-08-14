@@ -23,7 +23,7 @@ button { cursor: pointer; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, .color-fieldset input:focus-visible + .color-swatch { outline: 3px solid #fff0a5; outline-offset: 4px; }
 [hidden] { display: none !important; }
 
-.cosmos { position: fixed; inset: 0; background: #09102d url("./assets/starfield-bg.png") center / cover no-repeat; opacity: .78; pointer-events: none; }
+.cosmos { position: fixed; inset: 0; background: #09102d url("./assets/starfield-bg.webp") center / cover no-repeat; opacity: .78; pointer-events: none; }
 .cosmos::after { content: ""; position: absolute; inset: 0; background: rgba(5, 11, 38, .28); }
 .app-shell { position: relative; min-height: 100vh; }
 .view { width: min(100% - 24px, 1180px); min-height: 100vh; margin: 0 auto; padding-block: 16px 28px; padding-bottom: max(24px, env(safe-area-inset-bottom)); opacity: 0; transform: translateX(28px); }
@@ -75,8 +75,8 @@ h2 { margin-bottom: 3px; font-size: clamp(24px, 7vw, 30px); }
 .primary-action:hover, .secondary-action:hover { transform: translateY(-3px); filter: brightness(1.12); }
 .secondary-action:disabled { cursor: not-allowed; opacity: .45; transform: none; }
 
-.write-layout, .open-layout { display: grid; gap: 22px; padding-top: 18px; }
-.journal-card, .unfolded-paper, .fold-stage, .success-card, .empty-card { width: 100%; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); box-shadow: 0 28px 65px rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.12); backdrop-filter: blur(18px); }
+.write-layout, .open-layout { display: grid; min-width: 0; gap: 22px; padding-top: 18px; }
+.journal-card, .unfolded-paper, .fold-stage, .success-card, .empty-card { width: 100%; min-width: 0; max-width: 100%; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); box-shadow: 0 28px 65px rgba(0,0,0,.32), inset 0 1px rgba(255,255,255,.12); backdrop-filter: blur(18px); }
 .journal-card { padding: 22px 18px; }
 .journal-card label, .solution-panel label { display: block; margin: 14px 0 8px; color: #f5ebfb; font-weight: 800; }
 .journal-card input:not([type="radio"]):not([type="range"]), textarea { width: 100%; border: 1px solid rgba(225, 211, 255, .25); border-radius: 17px; color: white; background: rgba(8, 12, 43, .72); padding: 14px 16px; font-size: 16px; }
@@ -97,7 +97,7 @@ input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--pink); 
 .journal-card .primary-action { width: 100%; }
 
 .fold-stage, .success-card { padding: 24px 18px; text-align: center; }
-.fold-journey { position: relative; width: 590px; max-width: 100%; margin: 18px auto 8px; }
+.fold-journey { position: relative; width: 100%; min-width: 0; max-width: 590px; margin: 18px auto 8px; }
 .fold-journey-art { display: block; width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0 14px 18px rgba(255, 80, 174, .2)); }
 .fold-step-labels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 3px 0 0; color: #ffd6eb; font-size: 10px; font-weight: 800; letter-spacing: .04em; }
 .fold-step-label { opacity: .55; transform: translateY(6px); }
