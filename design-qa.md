@@ -6,6 +6,9 @@
 - Final implementation home: `C:\Users\CHAO\Desktop\web\.worktrees\desktop-multi-view\qa\home-kitty-assets.png`
 - Full comparison canvas: `C:\Users\CHAO\Desktop\web\.worktrees\desktop-multi-view\qa\comparison-kitty-final.png`
 - Supporting views: `qa\write-kitty-assets.png`, `qa\open-kitty-assets.png`, `qa\archive-kitty-assets.png`
+- Folding reference: `C:\Users\CHAO\AppData\Local\Temp\codex-clipboard-f32e0512-87bf-4f53-9bd5-48a3a2a04a2a.png`
+- Final folding flow: `C:\Users\CHAO\Desktop\web\.worktrees\desktop-multi-view\qa\fold-journey-final.png`
+- Folding comparison canvas: `C:\Users\CHAO\Desktop\web\.worktrees\desktop-multi-view\qa\fold-comparison-final.png`
 - Source pixels: 1194 × 1317.
 - Implementation pixels: 900 × 881, captured from a 910 × 698 CSS viewport at DPR 1.25 as a full-page image.
 - Normalization: source was proportionally downsampled to the implementation height and placed beside the implementation; browser chrome was excluded.
@@ -40,6 +43,7 @@ The final bottle uses stable natural scatter rather than rows: star x/y position
 3. Earlier P2: primary actions could appear clipped after cross-view scrolling. Fix: every navigation resets the document to the top and compact desktop layouts adapt below 1100 px. Post-fix evidence: `home-random-final.png` shows the full home journey without obstruction.
 4. Earlier P2: stars formed overlapping diagonal stacks, then an overly regular grid. Fix: added deterministic natural-scatter placement with minimum spacing, varied size/angle/depth/duration, and full-height bottle coverage. Post-fix evidence: `comparison-random-final.png` shows separated, irregular floating stars.
 5. Earlier P2: the original star face felt too static and the bottle bow lacked enough Kitty identity. Fix: generated a more expressive folded-star sprite and a transparent jar with Kitty face medallion plus dangling star charm, then replaced the assets across home, fold, open, success, and archive views. Post-fix evidence: `comparison-kitty-final.png` and the three supporting view captures.
+6. Earlier P2: the folding guide was a small, static three-state strip with weak process clarity. Fix: rebuilt it as a transparent four-step journey—paper strip, folded corner, tightened star, completed expressive star—with three directional arrows, aligned labels, sequential reveal, finishing glow, and a reduced-motion fallback. Post-fix evidence: `fold-journey-final.png` and `fold-comparison-final.png`.
 
 ## Findings
 
@@ -49,6 +53,7 @@ The final bottle uses stable natural scatter rather than rows: star x/y position
 ## Primary interactions tested
 
 - Create → fold → fly into bottle → return home → reload persistence.
+- Four-step fold art fully visible without clipping; labels align with each state; final commit adds one pending record.
 - Random open → return unchanged.
 - Random open → show solution → reject blank solution → resolve → archive.
 - Archive expand/collapse and color filtering.

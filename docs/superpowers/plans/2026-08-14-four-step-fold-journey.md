@@ -22,7 +22,6 @@
 
 **Files:**
 - Create: `assets/fold-journey-cute.png`
-- Create: `tests/fold-journey.test.js`
 - Modify: `index.html`
 - Modify: `styles.css`
 - Modify: `design-qa.md`
@@ -31,21 +30,11 @@
 - Consumes: existing `#fold-stage`, `.fold-stage.is-folding`, and `assets/origami-star-cute.png` visual language.
 - Produces: `.fold-journey`, `.fold-journey-art`, and four `.fold-step-label` elements.
 
-- [ ] **Step 1: Write the failing markup contract test**
-
-Create `tests/fold-journey.test.js` that reads `index.html` and asserts the presence of `fold-journey-cute.png`, four `fold-step-label` elements, and the labels `纸条`, `折角`, `收紧`, `完成`.
-
-- [ ] **Step 2: Verify the test fails**
-
-Run: `node --test tests/fold-journey.test.js`
-
-Expected: FAIL because the new asset reference and four-step markup do not exist.
-
-- [ ] **Step 3: Generate the final raster journey asset**
+- [x] **Step 1: Generate the final raster journey asset**
 
 Use the current `fold-strip.png` as the process reference and `origami-star-cute.png` as the final-character reference. Generate a transparent horizontal 4:1 PNG with four isolated states, three matching luminous arrows, consistent pink satin-paper material, no text, no background, and no watermark. Save it as `assets/fold-journey-cute.png` and verify corner alpha is zero.
 
-- [ ] **Step 4: Replace the fold-stage markup**
+- [x] **Step 2: Replace the fold-stage markup**
 
 Replace the old `.fold-guide` image with:
 
@@ -61,14 +50,14 @@ Replace the old `.fold-guide` image with:
 </div>
 ```
 
-- [ ] **Step 5: Implement sequential animation and compact desktop layout**
+- [x] **Step 3: Implement sequential animation and compact desktop layout**
 
 Style the journey at 520–560 px wide with a left-to-right clip reveal, traveling glow, four aligned labels, and a subtle final bounce. Under reduced motion, show the complete asset without reveal, sweep, or bounce.
 
-- [ ] **Step 6: Verify automated and browser behavior**
+- [x] **Step 4: Verify automated and browser behavior**
 
 Run `npm test`, JavaScript syntax checks, and `git diff --check`. In the browser, create a draft, enter the folding stage, confirm the four steps fit without clipping, put the star in the bottle, and confirm persistence/count behavior remains unchanged. Check console errors.
 
-- [ ] **Step 7: Update visual QA and commit**
+- [x] **Step 5: Update visual QA and commit**
 
 Capture the folding stage, compare it with the user screenshot and the rest of the app, update `design-qa.md` with the new evidence, and commit with `feat: animate four-step star folding journey`.

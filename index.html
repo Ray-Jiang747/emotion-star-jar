@@ -77,8 +77,16 @@
 
         <div id="fold-stage" class="fold-stage" hidden>
           <p class="eyebrow">慢慢折，把情绪收进纸里</p>
-          <img class="fold-guide" src="./assets/fold-strip.png" alt="纸条折成星星的过程">
-          <img id="folded-star" class="folded-star" src="./assets/origami-star-cute.png" alt="折好的可爱情绪星星">
+          <div class="fold-journey" aria-label="纸条经过折角、收紧，最终变成可爱星星的四步过程">
+            <img class="fold-journey-art" src="./assets/fold-journey-cute.png" alt="纸条折成可爱星星的四步过程">
+            <img id="folded-star" class="folded-star" src="./assets/origami-star-cute.png" alt="" aria-hidden="true">
+            <div class="fold-step-labels" aria-hidden="true">
+              <span class="fold-step-label">纸条</span>
+              <span class="fold-step-label">折角</span>
+              <span class="fold-step-label">收紧</span>
+              <span class="fold-step-label">完成</span>
+            </div>
+          </div>
           <img id="fold-target-jar" class="fold-target-jar" src="./assets/kitty-star-jar.png" alt="等待收下星星的猫咪装饰小瓶子">
           <button id="commit-star" class="primary-action" type="button">放进瓶子</button>
         </div>
