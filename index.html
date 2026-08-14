@@ -42,7 +42,8 @@
     h1 { margin-bottom: 6px; font-size: clamp(2rem, 7vw, 3.3rem); letter-spacing: .08em; line-height: 1.15; }
     .subtitle { color: var(--muted); font-size: 1.02rem; margin: 0; }
 
-    .cat-sticker { position: relative; flex: 0 0 108px; width: 108px; height: 94px; transform: rotate(5deg); filter: drop-shadow(0 5px 4px rgba(152,81,92,.14)); }
+    .cat-sticker { position: relative; flex: 0 0 108px; width: 108px; height: 108px; transform: rotate(4deg); filter: drop-shadow(0 7px 5px rgba(152,81,92,.18)); overflow: hidden; border: 4px solid rgba(255,255,255,.9); border-radius: 25px; background:#fff; }
+    .cat-sticker > img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: 23% 13%; transform: scale(1.68); transform-origin: 23% 13%; }
     .cat-head { position: absolute; inset: 20px 8px 4px; border: 3px solid #9e5964; border-radius: 44% 44% 48% 48%; background: linear-gradient(135deg,#fff,#fff8ef); }
     .cat-head::before, .cat-head::after { content: ""; position: absolute; top: -19px; width: 30px; height: 33px; background: #fffaf2; border: 3px solid #9e5964; z-index: -1; }
     .cat-head::before { left: 3px; border-radius: 90% 15% 30% 15%; transform: rotate(-20deg); }
@@ -130,7 +131,7 @@
   <main>
     <header>
       <div><h1>我的情绪星星瓶</h1><p class="subtitle">把此刻的心情折成一颗小星星，慢慢照亮自己。</p></div>
-      <div class="cat-sticker" role="img" aria-label="Hello Kitty 风格的蝴蝶结小猫贴纸"><div class="cat-head"><div class="cat-face"></div><div class="cat-whiskers"></div></div><div class="cat-bow"></div><span class="kitty-ribbon">HELLO ★</span></div>
+      <div class="cat-sticker"><img src="assets/hello-kitty.png" alt="Hello Kitty 蝴蝶结小猫"></div>
     </header>
 
     <div class="layout">
