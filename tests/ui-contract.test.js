@@ -20,3 +20,8 @@ test('styles are mobile-first and include tablet and desktop breakpoints', async
   assert.match(css, /safe-area-inset-bottom/);
   assert.match(css, /font-size:\s*16px/);
 });
+
+test('range input has a 44px mobile touch target', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.match(css, /input\[type="range"\]\s*\{[^}]*min-height:\s*44px/s);
+});
