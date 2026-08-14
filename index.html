@@ -203,6 +203,9 @@
       const starDialog = document.querySelector('#star-dialog');
       const dialogReason = document.querySelector('#dialog-reason');
       const solutionInput = document.querySelector('#solution-input');
+      const createButton = document.querySelector('#create-star');
+      let stars = [];
+      let dialogReturnFocus = null;
 
       function announce(message) {
         status.textContent = message;
@@ -235,23 +238,29 @@
       function loadStars() {
         try {
           const raw = window.localStorage.getItem(storageKey);
-          if (raw === null) return [];
-          const stars = JSON.parse(raw);
-          if (!Array.isArray(stars)) throw new Error('Stored value is not an array');
-          if (!stars.every(isValidStarEntry)) throw new Error('Stored array contains an invalid entry');
+          if (raw === null) {
+            stars = [];
+            return stars;
+          }
+          const storedStars = JSON.parse(raw);
+          if (!Array.isArray(storedStars)) throw new Error('Stored value is not an array');
+          if (!storedStars.every(isValidStarEntry)) throw new Error('Stored array contains an invalid entry');
+          stars = storedStars;
           return stars;
         } catch (error) {
+          stars = [];
           announce('读取星星时出了点问题，已从空瓶重新开始。');
-          return [];
+          return stars;
         }
       }
 
-      function saveStars(stars) {
+      function saveStars(nextStars) {
         try {
-          window.localStorage.setItem(storageKey, JSON.stringify(stars));
+          window.localStorage.setItem(storageKey, JSON.stringify(nextStars));
+          stars = nextStars;
           return true;
         } catch (error) {
-          announce('暂时没有存好这颗星星，请稍后再试。');
+          announce('这台设备暂时无法保存记录；请稍后重试。');
           return false;
         }
       }
@@ -327,8 +336,9 @@
       }
 
       function openStar(id) {
-        const star = loadStars().find((entry) => entry.id === id && entry.status === 'pending');
+        const star = stars.find((entry) => entry.id === id && entry.status === 'pending');
         if (!star) return;
+        dialogReturnFocus = document.activeElement;
         starDialog.dataset.starId = star.id;
         dialogReason.textContent = `这颗星星写着：${star.reason}`;
         solutionInput.value = '';
@@ -367,8 +377,8 @@
           : star);
         if (!saveStars(nextStars)) return false;
         animateDeparture(target);
-        starDialog.close();
         render(nextStars);
+        starDialog.close();
         announce('这颗星星已经带着你的回应，轻轻离开瓶子了。');
         return true;
       }
@@ -381,7 +391,6 @@
           return;
         }
         const selected = form.elements['star-color'].value;
-        const stars = loadStars();
         const nextStars = [...stars, createStar(reason, selected)];
         if (saveStars(nextStars)) {
           render(nextStars);
@@ -395,13 +404,21 @@
         resolveStar(starDialog.dataset.starId, solutionInput.value);
       });
 
+      starDialog.addEventListener('close', () => {
+        const target = dialogReturnFocus;
+        dialogReturnFocus = null;
+        const focusTarget = target && target.isConnected ? target : createButton;
+        focusTarget.focus();
+      });
+
       window.loadStars = loadStars;
       window.saveStars = saveStars;
       window.createStar = createStar;
       window.render = render;
       window.openStar = openStar;
       window.resolveStar = resolveStar;
-      render(loadStars());
+      stars = loadStars();
+      render(stars);
     })();
   </script>
 </body>
