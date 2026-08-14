@@ -14,7 +14,7 @@ const memoryStorage = (seed = []) => {
 test('adds and persists a normalized pending star', () => {
   const storage = memoryStorage();
   const store = createStarStore(storage, () => 0);
-  const star = store.add({ title: '误会', reason: '没有被理解', intensity: 70, color: 'pink' });
+  const star = store.add({ title: '误会', reason: '没有被理解', intensity: 70, emotion: 'wronged' });
   assert.equal(star.status, 'pending');
   assert.equal(store.pending().length, 1);
   assert.equal(storage.read()[0].reason, '没有被理解');
@@ -32,7 +32,7 @@ test('random selection never returns a resolved star', () => {
 test('resolve requires a solution and moves the star to resolved', () => {
   const storage = memoryStorage([{ id: 'open', reason: '新问题', status: 'pending' }]);
   const store = createStarStore(storage, () => 0);
-  assert.throws(() => store.resolve('open', '   '), /解决方法/);
+  assert.throws(() => store.resolve('open', '   '), /回应内容/);
   const done = store.resolve('open', '认真沟通');
   assert.equal(done.status, 'resolved');
   assert.equal(done.solution, '认真沟通');
@@ -40,21 +40,35 @@ test('resolve requires a solution and moves the star to resolved', () => {
   assert.equal(store.pending().length, 0);
 });
 
-test('filters resolved records by color', () => {
+test('filters resolved records by emotion', () => {
   const rows = [
-    { status: 'resolved', color: 'pink' },
-    { status: 'resolved', color: 'blue' },
-    { status: 'pending', color: 'pink' }
+    { status: 'resolved', emotion: 'happy' },
+    { status: 'resolved', emotion: 'sad' },
+    { status: 'pending', emotion: 'happy' }
   ];
-  assert.equal(filterResolved(rows, 'pink').length, 1);
+  assert.equal(filterResolved(rows, 'happy').length, 1);
   assert.equal(filterResolved(rows, 'all').length, 2);
 });
 
 test('add rejects empty reason and clamps intensity', () => {
   const store = createStarStore(memoryStorage(), () => 0);
-  assert.throws(() => store.add({ reason: '   ' }), /生气原因/);
-  const star = store.add({ reason: '压力很大', intensity: 160, color: 'blue' });
+  assert.throws(() => store.add({ reason: '   ' }), /发生的事情/);
+  const star = store.add({ reason: '压力很大', intensity: 160, emotion: 'sad' });
   assert.equal(star.intensity, 100);
+});
+
+test('legacy records become angry without losing their original color', () => {
+  const store = createStarStore(memoryStorage([{ id: 'legacy', reason: '旧记录', color: 'blue', status: 'pending' }]));
+  assert.equal(store.list()[0].emotion, 'angry');
+  assert.equal(store.list()[0].color, 'blue');
+});
+
+test('persists a selected emotion and requires a custom other label', () => {
+  const store = createStarStore(memoryStorage(), () => 0);
+  assert.throws(() => store.add({ reason: '说不清', emotion: 'other' }), /情绪名称/);
+  const star = store.add({ reason: '新的体验', emotion: 'happy', intensity: 75 });
+  assert.equal(star.emotion, 'happy');
+  assert.equal(star.color, 'yellow');
 });
 
 test('resolved archive is newest first without mutating source', () => {
