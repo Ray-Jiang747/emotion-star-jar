@@ -1,6 +1,7 @@
 import { createStarStore, filterResolved } from './star-store.js';
 import { createViewState } from './view-state.js';
 import { createStarLayout } from './star-layout.js';
+import { EMOTIONS, getEmotion, getEmotionLabel } from './emotion-catalog.js';
 
 const store = createStarStore();
 const router = createViewState('home');
@@ -14,6 +15,8 @@ const openAction = document.querySelector('#action-open');
 const form = document.querySelector('#star-form');
 const titleInput = document.querySelector('#star-title');
 const reasonInput = document.querySelector('#star-reason');
+const customEmotionField = document.querySelector('#custom-emotion-field');
+const customEmotionInput = document.querySelector('#custom-emotion');
 const reasonError = document.querySelector('#reason-error');
 const reasonCount = document.querySelector('#reason-count');
 const intensityInput = document.querySelector('#star-intensity');
@@ -31,6 +34,7 @@ const openStage = document.querySelector('#open-stage');
 const openedStarArt = document.querySelector('#opened-star-art');
 const openColor = document.querySelector('#open-color');
 const openStarTitle = document.querySelector('#open-star-title');
+const openStarEmotion = document.querySelector('#open-star-emotion');
 const openStarReason = document.querySelector('#open-star-reason');
 const openStarIntensity = document.querySelector('#open-star-intensity');
 const openStarCreated = document.querySelector('#open-star-created');
@@ -46,7 +50,7 @@ const archiveEmpty = document.querySelector('#archive-empty');
 const filterButtons = [...document.querySelectorAll('[data-filter]')];
 let openedStar = null;
 let archiveFilter = 'all';
-const colorLabels = { pink: '粉色', yellow: '黄色', blue: '蓝色', purple: '紫色', mint: '薄荷色' };
+const archiveFilters = new Set(['all', ...EMOTIONS.map(({ id }) => id)]);
 const formatDate = (value) => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 
 export function renderHome() {
@@ -69,7 +73,7 @@ export function renderHome() {
     button.style.setProperty('--star-rotate', `${position.rotate}deg`);
     button.style.setProperty('--star-duration', `${position.duration}s`);
     button.style.zIndex = position.depth;
-    button.setAttribute('aria-label', `待解决星星：${star.title || star.reason}`);
+    button.setAttribute('aria-label', `待回应星星：${star.title || star.reason}`);
     const image = document.createElement('img');
     image.src = './assets/origami-star-cute.png';
     image.alt = '';
@@ -119,15 +123,23 @@ const flyStarIntoJar = async () => {
 export function startFold() {
   const reason = reasonInput.value.trim();
   if (!reason) {
-    reasonError.textContent = '请先写下生气的原因';
+    reasonError.textContent = '请先写下发生的事情';
     reasonInput.focus();
+    return false;
+  }
+  const emotion = new FormData(form).get('emotion');
+  const customEmotion = customEmotionInput.value.trim();
+  if (emotion === 'other' && !customEmotion) {
+    reasonError.textContent = '请填写情绪名称';
+    customEmotionInput.focus();
     return false;
   }
   draftStar = {
     title: titleInput.value.trim(),
     reason,
     intensity: Number(intensityInput.value),
-    color: new FormData(form).get('color')
+    emotion,
+    customEmotion
   };
   form.hidden = true;
   foldStage.hidden = false;
@@ -145,12 +157,13 @@ export async function commitFoldedStar() {
   foldStage.hidden = true;
   writeSuccess.hidden = false;
   form.reset();
+  customEmotionField.hidden = true;
   intensityInput.value = '60';
   intensityOutput.textContent = '60';
   reasonCount.textContent = '0 / 120';
   draftStar = null;
   interactionLocked = false;
-  showToast('星星已经飞进瓶子里了');
+  showToast('情绪星星已经收进瓶子里了');
   return saved;
 }
 
@@ -170,8 +183,11 @@ export function openRandomStar() {
   openStage.hidden = false;
   openStage.classList.add('is-opening');
   setTimeout(() => openStage.classList.remove('is-opening'), 750);
-  openedStarArt.className = openedStar.color;
-  openColor.className = `color-swatch ${openedStar.color}`;
+  const emotion = getEmotion(openedStar.emotion);
+  const starColor = openedStar.color || emotion.color;
+  openedStarArt.className = starColor;
+  openColor.className = `color-swatch ${starColor}`;
+  openStarEmotion.textContent = getEmotionLabel(openedStar);
   openStarTitle.textContent = openedStar.title || '没有标题的这颗星星';
   openStarReason.textContent = openedStar.reason;
   openStarIntensity.textContent = `${openedStar.intensity} / 100`;
@@ -195,7 +211,7 @@ export async function resolveOpenedStar() {
   if (!openedStar || interactionLocked) return null;
   const solution = solutionText.value.trim();
   if (!solution) {
-    solutionError.textContent = '请写下你是怎么解决的';
+    solutionError.textContent = '请写下回应内容';
     solutionText.focus();
     return null;
   }
@@ -210,12 +226,12 @@ export async function resolveOpenedStar() {
   renderHome();
   renderArchive();
   navigate('archive');
-  showToast('这颗星星已经化成成长的星光');
+  showToast('这份回应已经收入成长记录');
   return resolved;
 }
 
 export function renderArchive(filter = archiveFilter) {
-  archiveFilter = filter;
+  archiveFilter = archiveFilters.has(filter) ? filter : 'all';
   const allResolved = store.resolved();
   const records = filterResolved(allResolved, archiveFilter);
   archiveCount.textContent = allResolved.length;
@@ -225,7 +241,9 @@ export function renderArchive(filter = archiveFilter) {
   filterButtons.forEach((button) => button.classList.toggle('is-selected', button.dataset.filter === archiveFilter));
   archiveGrid.replaceChildren(...records.map((star) => {
     const article = document.createElement('article');
-    article.className = `archive-card ${star.color}`;
+    const emotion = getEmotion(star.emotion);
+    const starColor = star.color || emotion.color;
+    article.className = `archive-card ${starColor}`;
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'archive-card-toggle';
@@ -238,7 +256,7 @@ export function renderArchive(filter = archiveFilter) {
     starVisual.append(starImage);
     const summary = document.createElement('span');
     const summaryMeta = document.createElement('small');
-    summaryMeta.textContent = `${colorLabels[star.color] || '情绪星星'} · ${formatDate(star.resolvedAt)}`;
+    summaryMeta.textContent = `${getEmotionLabel(star)} · ${formatDate(star.resolvedAt)}`;
     const summaryTitle = document.createElement('strong');
     summaryTitle.textContent = star.title || star.reason;
     const summaryReason = document.createElement('em');
@@ -249,11 +267,11 @@ export function renderArchive(filter = archiveFilter) {
     detail.className = 'archive-detail';
     detail.hidden = true;
     const label = document.createElement('b');
-    label.textContent = '我是这样解决的';
+    label.textContent = '我是这样回应的';
     const copy = document.createElement('p');
     copy.textContent = star.solution;
     const time = document.createElement('span');
-    time.textContent = `记录于 ${formatDate(star.createdAt)} · 解决于 ${formatDate(star.resolvedAt)}`;
+    time.textContent = `记录于 ${formatDate(star.createdAt)} · 回应于 ${formatDate(star.resolvedAt)}`;
     detail.append(label, copy, time);
     toggle.addEventListener('click', () => {
       const expanded = toggle.getAttribute('aria-expanded') === 'true';
@@ -288,6 +306,10 @@ reasonInput.addEventListener('input', () => {
   reasonCount.textContent = `${reasonInput.value.length} / 120`;
   if (reasonInput.value.trim()) reasonError.textContent = '';
 });
+form.querySelectorAll('input[name="emotion"]').forEach((input) => input.addEventListener('change', () => {
+  customEmotionField.hidden = input.value !== 'other' || !input.checked;
+  if (customEmotionField.hidden) customEmotionInput.value = '';
+}));
 intensityInput.addEventListener('input', () => { intensityOutput.textContent = intensityInput.value; });
 form.addEventListener('submit', (event) => { event.preventDefault(); if (!interactionLocked) startFold(); });
 commitStarButton.addEventListener('click', () => { void commitFoldedStar(); });

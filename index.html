@@ -20,7 +20,7 @@
             <p>每一颗星星，都是一次理解自己的机会。</p>
           </div>
         </div>
-        <button id="action-archive" class="glass-button" type="button" data-nav="archive">已解决记录 <span id="resolved-count">0</span></button>
+        <button id="action-archive" class="glass-button" type="button" data-nav="archive">成长记录 <span id="resolved-count">0</span></button>
       </header>
 
       <div class="home-stage">
@@ -39,11 +39,11 @@
           </div>
         </div>
 
-        <div class="count-badge">瓶子里有 <strong id="pending-count">0</strong> 颗待解决星星</div>
+        <div class="count-badge">瓶子里有 <strong id="pending-count">0</strong> 颗待回应星星</div>
 
         <div class="home-actions">
           <button id="action-write" class="primary-action" type="button" data-nav="write">写入一颗星星</button>
-          <button id="action-open" class="secondary-action" type="button" data-nav="open">随机拆开一颗</button>
+          <button id="action-open" class="secondary-action" type="button" data-nav="open">打开一颗情绪星星</button>
         </div>
       </div>
     </section>
@@ -59,19 +59,25 @@
         <form id="star-form" class="journal-card" novalidate>
           <label for="star-title">事件标题</label>
           <input id="star-title" maxlength="36" placeholder="例如：沟通时被误解了">
-          <label for="star-reason">为什么生气？</label>
+          <label for="star-reason">发生了什么？</label>
           <textarea id="star-reason" maxlength="120" placeholder="把发生的事情和感受写下来……"></textarea>
           <div class="field-meta"><span id="reason-error" class="error-text" role="alert"></span><span id="reason-count">0 / 120</span></div>
           <label for="star-intensity">情绪强度 <output id="intensity-output">60</output></label>
           <input id="star-intensity" type="range" min="0" max="100" value="60">
           <fieldset class="color-fieldset">
-            <legend>选择情绪颜色</legend>
-            <label><input type="radio" name="color" value="pink" checked><span class="color-swatch pink"></span><b>委屈</b></label>
-            <label><input type="radio" name="color" value="yellow"><span class="color-swatch yellow"></span><b>失望</b></label>
-            <label><input type="radio" name="color" value="blue"><span class="color-swatch blue"></span><b>难过</b></label>
-            <label><input type="radio" name="color" value="purple"><span class="color-swatch purple"></span><b>焦虑</b></label>
-            <label><input type="radio" name="color" value="mint"><span class="color-swatch mint"></span><b>疲惫</b></label>
+            <legend>现在是什么情绪？</legend>
+            <label><input type="radio" name="emotion" value="happy" checked><span class="color-swatch yellow"></span><b>开心</b></label>
+            <label><input type="radio" name="emotion" value="calm"><span class="color-swatch mint"></span><b>平静</b></label>
+            <label><input type="radio" name="emotion" value="sad"><span class="color-swatch blue"></span><b>难过</b></label>
+            <label><input type="radio" name="emotion" value="anxious"><span class="color-swatch purple"></span><b>焦虑</b></label>
+            <label><input type="radio" name="emotion" value="wronged"><span class="color-swatch pink"></span><b>委屈</b></label>
+            <label><input type="radio" name="emotion" value="angry"><span class="color-swatch coral"></span><b>生气</b></label>
+            <label><input type="radio" name="emotion" value="other"><span class="color-swatch lavender"></span><b>其他</b></label>
           </fieldset>
+          <div id="custom-emotion-field" hidden>
+            <label for="custom-emotion">这份情绪叫什么？</label>
+            <input id="custom-emotion" maxlength="16" placeholder="例如：期待">
+          </div>
           <button class="primary-action" type="submit">开始折星星</button>
         </form>
 
@@ -104,12 +110,12 @@
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
         <div><p class="eyebrow">准备好时，再轻轻打开</p><h2 id="open-title">拆开一颗星星</h2></div>
-        <span class="step-label">随机抽取待解决星星</span>
+        <span class="step-label">随机打开一颗待回应星星</span>
       </header>
 
       <div id="open-empty" class="empty-card" hidden>
         <img src="./assets/kitty-companion.png" alt="抱着星星的猫咪伙伴">
-        <h3>瓶子里暂时没有待解决星星</h3>
+        <h3>瓶子里暂时没有待回应星星</h3>
         <button class="primary-action" type="button" data-nav="write">写入一颗星星</button>
       </div>
 
@@ -118,18 +124,18 @@
           <img id="opened-star-art" src="./assets/origami-star-cute.png" alt="随机抽出的可爱情绪星星">
         </div>
         <article class="unfolded-paper">
-          <div class="paper-heading"><span id="open-color" class="color-swatch pink"></span><div><p class="eyebrow">当时的我</p><h3 id="open-star-title"></h3></div></div>
+          <div class="paper-heading"><span id="open-color" class="color-swatch pink"></span><div><p id="open-star-emotion" class="eyebrow"></p><h3 id="open-star-title"></h3></div></div>
           <p id="open-star-reason" class="reason-copy"></p>
           <dl class="star-meta"><div><dt>情绪强度</dt><dd id="open-star-intensity"></dd></div><div><dt>记录时间</dt><dd id="open-star-created"></dd></div></dl>
           <div id="open-actions" class="open-actions">
-            <button id="return-star" class="secondary-action" type="button">暂时还没解决，放回瓶子</button>
-            <button id="show-solution" class="primary-action" type="button">我已经解决了</button>
+            <button id="return-star" class="secondary-action" type="button">暂时不回应，放回瓶子</button>
+            <button id="show-solution" class="primary-action" type="button">回应这份情绪</button>
           </div>
           <div id="solution-panel" class="solution-panel" hidden>
-            <label for="solution-text">我是这样解决的</label>
+            <label for="solution-text">我想怎样回应这份情绪？</label>
             <textarea id="solution-text" maxlength="180" placeholder="写下沟通、行动或心态上的改变……"></textarea>
             <p id="solution-error" class="error-text" role="alert"></p>
-            <button id="resolve-star" class="primary-action" type="button">让这颗星星化成星光</button>
+            <button id="resolve-star" class="primary-action" type="button">收好这份回应</button>
           </div>
         </article>
       </div>
@@ -138,20 +144,22 @@
     <section id="view-archive" class="view" data-view="archive" aria-labelledby="archive-title" hidden>
       <header class="sub-header">
         <button class="back-button" type="button" data-nav="home">返回星星瓶</button>
-        <div><p class="eyebrow">每一次面对，都是成长</p><h2 id="archive-title">已解决记录</h2></div>
-        <strong class="archive-total">已经解决 <span id="archive-count">0</span> 颗星星</strong>
+        <div><p class="eyebrow">每一次回应，都是成长</p><h2 id="archive-title">成长记录</h2></div>
+        <strong class="archive-total">已经回应 <span id="archive-count">0</span> 颗星星</strong>
       </header>
-      <div class="archive-toolbar" role="group" aria-label="按情绪颜色筛选">
+      <div class="archive-toolbar" role="group" aria-label="按情绪类型筛选">
         <button class="filter-button is-selected" type="button" data-filter="all">全部</button>
-        <button class="filter-button" type="button" data-filter="pink">粉色</button>
-        <button class="filter-button" type="button" data-filter="yellow">黄色</button>
-        <button class="filter-button" type="button" data-filter="blue">蓝色</button>
-        <button class="filter-button" type="button" data-filter="purple">紫色</button>
-        <button class="filter-button" type="button" data-filter="mint">薄荷色</button>
+        <button class="filter-button" type="button" data-filter="happy">开心</button>
+        <button class="filter-button" type="button" data-filter="calm">平静</button>
+        <button class="filter-button" type="button" data-filter="sad">难过</button>
+        <button class="filter-button" type="button" data-filter="anxious">焦虑</button>
+        <button class="filter-button" type="button" data-filter="wronged">委屈</button>
+        <button class="filter-button" type="button" data-filter="angry">生气</button>
+        <button class="filter-button" type="button" data-filter="other">其他</button>
       </div>
       <div id="archive-empty" class="empty-card" hidden>
         <img src="./assets/kitty-companion.png" alt="抱着星星的猫咪伙伴">
-        <h3>解决第一颗星星后，成长记录会出现在这里</h3>
+        <h3>回应第一颗星星后，成长记录会出现在这里</h3>
       </div>
       <div id="archive-grid" class="archive-grid"></div>
     </section>
