@@ -135,24 +135,26 @@ git commit -m "feat: add emotion star state model"
 
 **Interfaces:**
 - Consumes: `createStarStore()` from Task 1.
-- Produces: `navigate(viewName)`, `renderHome()`, and semantic view elements with IDs `view-home`, `view-write`, `view-open`, and `view-archive`.
+- Produces: `createViewState(initialView)`, `navigate(viewName)`, `renderHome()`, and semantic view elements with IDs `view-home`, `view-write`, `view-open`, and `view-archive`.
 
-- [ ] **Step 1: Add a failing shell contract test**
+- [ ] **Step 1: Add a failing view-state behavior test**
 
-Extend `tests/star-store.test.js` with a source contract test that reads `index.html` and requires all four view IDs, three home entry buttons, and one module script:
+Create `tests/view-state.test.js` to verify that only declared views can become active and subscribers receive the new view:
 
 ```js
-import fs from 'node:fs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createViewState } from '../js/view-state.js';
 
-test('desktop shell exposes four distinct application views', () => {
-  const html = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-  for (const id of ['view-home', 'view-write', 'view-open', 'view-archive']) {
-    assert.match(html, new RegExp(`id=["']${id}["']`));
-  }
-  for (const id of ['action-write', 'action-open', 'action-archive']) {
-    assert.match(html, new RegExp(`id=["']${id}["']`));
-  }
-  assert.match(html, /<script[^>]+type=["']module["'][^>]+src=["'].\/js\/app\.js["']/);
+test('navigation publishes one valid active view', () => {
+  const router = createViewState('home');
+  const visited = [];
+  router.subscribe((view) => visited.push(view));
+  assert.equal(router.navigate('write'), 'write');
+  assert.equal(router.current(), 'write');
+  assert.deepEqual(visited, ['write']);
+  assert.throws(() => router.navigate('missing'), /未知界面/);
+  assert.equal(router.current(), 'write');
 });
 ```
 
@@ -160,11 +162,11 @@ test('desktop shell exposes four distinct application views', () => {
 
 Run: `npm test`
 
-Expected: FAIL because the current one-page HTML lacks the four required IDs.
+Expected: FAIL with `ERR_MODULE_NOT_FOUND` for `js/view-state.js`.
 
 - [ ] **Step 3: Build semantic multi-view markup**
 
-Replace `index.html` with a document containing:
+Create `js/view-state.js` with a four-value view whitelist and subscriber notification, then replace `index.html` with a document containing:
 
 - a shared starfield background;
 - four sibling `<section class="view">` elements;
