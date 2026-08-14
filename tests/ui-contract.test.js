@@ -11,3 +11,12 @@ test('writing view uses inclusive emotion language and approved controls', async
   }
   assert.doesNotMatch(html, /为什么生气？|我已经解决了|待解决星星/);
 });
+
+test('styles are mobile-first and include tablet and desktop breakpoints', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  assert.doesNotMatch(css, /html\s*\{[^}]*min-width\s*:/s);
+  assert.match(css, /@media\s*\(min-width:\s*768px\)/);
+  assert.match(css, /@media\s*\(min-width:\s*1100px\)/);
+  assert.match(css, /safe-area-inset-bottom/);
+  assert.match(css, /font-size:\s*16px/);
+});
