@@ -60,3 +60,17 @@ The final bottle uses stable natural scatter rather than rows: star x/y position
 - Browser console warnings/errors: none in the final home state.
 
 final result: passed
+
+## 2026-08-14 — Responsive multi-emotion QA (recovery run)
+
+- Automated suite: `npm test` completed with 15/15 passing; 0 failed, cancelled, skipped, or todo tests (duration 200.961 ms).
+- Local serving check: `Invoke-WebRequest -UseBasicParsing http://localhost:8771/index.html` returned HTTP 200. The existing worktree QA server was reused.
+- Browser: Codex In-app Browser (browser engine family was not independently identified; no Safari or Firefox verification is claimed).
+- Viewports and views exercised: home, write, open, and archive were navigated at 320×568, 360×800, 390×844, 768×1024, 1024×768, 1366×768, and 1920×1080. DOM measurements found `document.documentElement.scrollWidth <= window.innerWidth` for all 28 view/viewport combinations; no visible button exceeded the viewport width and the measured primary-button font size was 16 px throughout. The archive grid measured one column at 320–390 px, two at 768–1024 px, and three at 1366–1920 px.
+- Interaction flow: created a preset `生气` record and a custom `期待` record through the UI; reloaded after each creation and confirmed pending counts of 1 then 2; opened the preset pending record, returned it unchanged, reopened it, saved a response, then selected the `生气` growth-record filter and confirmed exactly one matching archive card. The open view visibly rendered the selected preset label as `生气`.
+- Legacy-fixture evidence: the automated test `legacy records become angry without losing their original color` passed. Direct browser fixture seeding/inspection was not performed because this QA run did not access browser localStorage.
+- Console/page errors: no console/page-error result was collected before the recovery handoff stopped browser automation.
+
+### Limitation and outcome
+
+The structural checks above passed, but a 390×844 full-page capture of the open view showed vertically wrapped/narrow-looking labels despite the DOM measurements reporting no horizontal overflow. That visual anomaly was not investigated further because the recovery run was explicitly stopped. Therefore this is **not** a complete visual sign-off: record the run as `DONE_WITH_CONCERNS` pending a focused manual or Edge-headless visual retest of the 390×844 open view, plus browser console/page-error capture.
